@@ -1,11 +1,10 @@
 # encoding: utf-8
 
-from setuptools import setup, find_packages, Command
 import sys, os
-
-version = '0.7.3'
-
+from setuptools import setup, find_packages, Command
 from setuptools.command.test import test as TestCommand
+
+version = '0.0.1'
 
 
 class PyTest(TestCommand):
@@ -31,22 +30,31 @@ setup(
     name='vladiate',
     version=version,
     description="Vladiate is a strict validation tool for CSV files",
-    long_description="""Vladiate is a strict validation tool for CSV files""",
     classifiers=[
         "Development Status :: 4 - Beta",
+        'Environment :: Console',
+        'Natural Language :: English',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.0',
+        'Programming Language :: Python :: 3.1',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         "Intended Audience :: Developers",
     ],
-    keywords='',
+    keywords='validate CSV vampires',
     author='Dustin Ingram',
     author_email='github@dustingram.com',
     url='http://github.com/di/vladiate',
     license='MIT',
+    setup_requires=['setuptools-markdown'],
+    long_description_markdown_filename='README.md',
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,

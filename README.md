@@ -1,5 +1,4 @@
 # Vladiate
-A strict validation tool for CSV files
 
 ## Description
 Vladiate helps you write explicit assertions for every field of your CSV file.
@@ -22,7 +21,7 @@ Vladiate helps you write explicit assertions for every field of your CSV file.
 ### Installation
 Installing:
 
-    $ python setup.py install
+    $ pip install vladiate
 
 ### Quickstart
 Below is an example of a `vladfile.py`
