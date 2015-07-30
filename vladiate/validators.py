@@ -1,0 +1,133 @@
+from vladiate.exceptions import ValidationException
+
+
+class Validator(object):
+    ''' Generic Validator class '''
+
+    def __init__(self):
+        self.fail_count = 0
+
+    @property
+    def bad(self):
+        ''' Return something containing the "bad" fields '''
+        raise NotImplementedError
+
+    def validate(self, field, row):
+        ''' Validate the given field. Also is given the row context '''
+        raise NotImplementedError
+
+
+class CastValidator(Validator):
+    ''' Validates that a field can be cast to a float '''
+
+    def __init__(self):
+        super(CastValidator, self).__init__()
+        self.invalid_set = set([])
+
+    def validate(self, field, row={}):
+        try:
+            if (field or not self.empty_ok):
+                self.cast(field)
+        except ValueError, e:
+            self.invalid_set.add(field)
+            raise ValidationException(e)
+
+    @property
+    def bad(self):
+        return self.invalid_set
+
+
+class FloatValidator(CastValidator):
+    ''' Validates that a field can be cast to a float '''
+
+    def __init__(self, empty_ok=False):
+        super(FloatValidator, self).__init__()
+        self.empty_ok = empty_ok
+        self.cast = float
+
+
+class IntValidator(CastValidator):
+    ''' Validates that a field can be cast to an int '''
+
+    def __init__(self, empty_ok=False):
+        super(IntValidator, self).__init__()
+        self.empty_ok = empty_ok
+        self.cast = int
+
+
+class SetValidator(Validator):
+    ''' Validates that a field is in the given set '''
+
+    def __init__(self, valid_set=[], empty_ok=False):
+        super(SetValidator, self).__init__()
+        self.valid_set = set(valid_set)
+        self.invalid_set = set([])
+        if empty_ok:
+            self.valid_set.add('')
+
+    def validate(self, field, row={}):
+        if field not in self.valid_set:
+            self.invalid_set.add(field)
+            raise ValidationException(
+                "'{}' is not in {}".format(field, self.valid_set))
+
+    @property
+    def bad(self):
+        return self.invalid_set
+
+
+class UniqueValidator(Validator):
+    ''' Validates that a field is unique within the file '''
+
+    def __init__(self, unique_with=[]):
+        super(UniqueValidator, self).__init__()
+        self.unique_values = set([])
+        self.duplicates = set([])
+        self.unique_with = unique_with
+
+    def validate(self, field, row={}):
+        key = tuple([field] + [row[k] for k in self.unique_with])
+        if key not in self.unique_values:
+            self.unique_values.add(key)
+        else:
+            self.duplicates.add(key)
+            if self.unique_with:
+                raise ValidationException(
+                    "'{}' is already in the column (unique with: {})".format(
+                        field, key[1:]))
+            else:
+                raise ValidationException(
+                    "'{}' is already in the column".format(field))
+
+    @property
+    def bad(self):
+        return self.duplicates
+
+
+class EmptyValidator(Validator):
+    ''' Validates that a field is always empty '''
+
+    def __init__(self):
+        super(EmptyValidator, self).__init__()
+        self.nonempty = set([])
+
+    def validate(self, field, row={}):
+        if field != '':
+            self.nonempty.add(field)
+            raise ValidationException(
+                "'{}' is not an empty string".format(field))
+
+    @property
+    def bad(self):
+        return self.nonempty
+
+
+class Ignore(Validator):
+    ''' Ignore a given field. Never fails '''
+
+    def validate(self, field, row={}):
+        pass
+
+    @property
+    def bad(self):
+        pass
