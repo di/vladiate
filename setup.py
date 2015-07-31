@@ -25,6 +25,9 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+def readme():
+    with open('README.rst') as f:
+        return f.read()
 
 setup(
     name='vladiate',
@@ -53,8 +56,7 @@ setup(
     author_email='github@dustingram.com',
     url='http://github.com/di/vladiate',
     license='MIT',
-    setup_requires=['setuptools-markdown'],
-    long_description_markdown_filename='README.md',
+    long_description=readme(),
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
