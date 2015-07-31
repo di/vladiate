@@ -25,9 +25,11 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+
 def readme():
     with open('README.rst') as f:
         return f.read()
+
 
 setup(
     name='vladiate',
@@ -60,7 +62,7 @@ setup(
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
+    install_requires=['boto'],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
     entry_points={

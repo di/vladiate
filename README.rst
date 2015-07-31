@@ -10,18 +10,15 @@ file.
 Features
 --------
 
--  **Write validation schemas in plain-old Python**
+**Write validation schemas in plain-old Python**
+  No UI, no XML, no JSON, just code.
 
-No UI, no XML, no JSON, just code.
+**Write your own validators**
+  Vladiate comes with a few by default, but there's no reason you can't write
+  your own.
 
--  **Write your own validators**
-
-Vladiate comes with a few by default, but there's no reason you can't
-write your own.
-
--  **Validate multiple files at once**
-
-Either with the same schema, or different ones.
+**Validate multiple files at once**
+  Either with the same schema, or different ones.
 
 Documentation
 -------------
@@ -188,63 +185,88 @@ Built-in Validators
 
 Vladiate comes with a few common validators built-in:
 
--  *class* ``Validator``
+*class* ``Validator``
 
-Generic validator. Should be subclassed by any custom validators. Not to
-be used directly.
+  Generic validator. Should be subclassed by any custom validators. Not to
+  be used directly.
 
--  *class* ``CastValidator``
+*class* ``CastValidator``
 
-Generic "can-be-cast-to-x" validator. Should be subclassed by any
-cast-test validator. Not to be used directly.
+  Generic "can-be-cast-to-x" validator. Should be subclassed by any
+  cast-test validator. Not to be used directly.
 
--  *class* ``IntValidator``
+*class* ``IntValidator``
 
-Validates whether a field can be cast to an ``int`` type or not.
+  Validates whether a field can be cast to an ``int`` type or not.
 
--  ``empty_ok=False``
+  :``empty_ok=False``:
+      Specify whether a field which is an empty string should be ignored.
 
-   Specify whether a field which is an empty string should be ignored.
+*class* ``FloatValidator``
 
--  *class* ``FloatValidator``
+  Validates whether a field can be cast to an ``float`` type or not.
 
-Validates whether a field can be cast to an ``float`` type or not.
+  :``empty_ok=False``:
+      Specify whether a field which is an empty string should be ignored.
 
--  ``empty_ok=False``
+*class* ``SetValidator``
 
-   Specify whether a field which is an empty string should be ignored.
+  Validates whether a field is in the specified set of possible fields.
 
--  *class* ``SetValidator``
+  :``valid_set=[]``:
+      List of valid possible fields
+  :``empty_ok=False``:
+      Implicity adds the empty string to the specified set.
 
-Validates whether a field is in the specified set of possible fields.
+*class* ``UniqueValidator``
 
--  ``valid_set=[]``
+  Ensures that a given field is not repeated in any other column. Can
+  optionally determine "uniqueness" with other fields in the row as well via
+  ``unique_with``.
 
-   List of valid possible fields
+  :``unique_with=[]``:
+      List of field names to make the primary field unique with.
 
--  ``empty_ok=False``
+*class* ``EmptyValidator``
 
-   Implicity adds the empty string to the specified set.
+  Ensure that a field is always empty. Essentially the same as an empty
+  ``SetValidator``. This is used by default when a field has no
+  validators.
 
--  *class* ``UniqueValidator``
+*class* ``Ignore``
 
-Ensures that a given field is not repeated in any other column. Can
-optionally determine "uniqueness" with other fields in the row as well
-via ``unique_with``.
+  Always passes validation. Used to explicity ignore a given column.
 
--  ``unique_with=[]``
+Built-in Input Types
+^^^^^^^^^^^^^^^^^^^^
 
-   List of field names to make the primary field unique with.
+Vladiate comes with the following input types:
 
--  *class* ``EmptyValidator``
+*class* ``VladInput``
 
-Ensure that a field is always empty. Essentially the same as an empty
-``SetValidator``. This is used by default when a field has no
-validators.
+  Generic input. Should be subclassed by any custom inputs. Not to be used
+  directly.
 
--  *class* ``Ignore``
+*class* ``LocalFile``
 
-Always passes validation. Used to explicity ignore a given column.
+  Read from a file local to the filesystem.
+
+  :``filename``:
+      Path to a local CSV file.
+
+*class* ``S3File``
+
+  Read from a file in S3. Uses the `boto <https://github.com/boto/boto>`_
+  library. Optionally can specify either a full path, or a bucket/key pair.
+
+  :``path=None``:
+      A full S3 filepath (e.g., ``s3://foo.bar/path/to/file.csv``)
+
+  :``bucket=None``:
+      S3 bucket. Must be specified with a ``key``.
+
+  :``key=None``:
+      S3 key. Must be specified with a ``bucket``.
 
 Testing
 ~~~~~~~

@@ -49,18 +49,17 @@ class Vlad(object):
             for field, value in self.validators.iteritems() if not value
         })
 
-        with self.source.open() as csvfile:
-            reader = csv.DictReader(csvfile)
-            self.missing_fields = set(reader.fieldnames) - set(self.validators)
-            if not self.missing_fields:
-                for line, row in enumerate(reader):
-                    for field_name, field in row.iteritems():
-                        for validator in self.validators[field_name]:
-                            try:
-                                validator.validate(field, row=row)
-                            except ValidationException, e:
-                                self.failures[field_name][line].append(e)
-                                validator.fail_count += 1
+        reader = csv.DictReader(self.source.open())
+        self.missing_fields = set(reader.fieldnames) - set(self.validators)
+        if not self.missing_fields:
+            for line, row in enumerate(reader):
+                for field_name, field in row.iteritems():
+                    for validator in self.validators[field_name]:
+                        try:
+                            validator.validate(field, row=row)
+                        except ValidationException, e:
+                            self.failures[field_name][line].append(e)
+                            validator.fail_count += 1
 
         if self.missing_fields:
             self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")

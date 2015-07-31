@@ -1,3 +1,8 @@
+import io
+import boto
+from urlparse import urlparse
+
+
 class VladInput(object):
     ''' A generic input class '''
 
@@ -22,3 +27,32 @@ class LocalFile(VladInput):
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.filename)
+
+
+class S3File(VladInput):
+    ''' Read from a file in S3 '''
+
+    def __init__(self, path=None, bucket=None, key=None):
+        if path and not any((bucket, key)):
+            self.path = path
+            parse_result = urlparse(path)
+            self.bucket = parse_result.netloc
+            self.key = parse_result.path
+        elif all((bucket, key)):
+            self.bucket = bucket
+            self.key = key
+            self.path = "s3://{}{}"
+        else:
+            raise ValueError(
+                "Either 'path' argument or 'bucket' and 'key' argument must be set.")
+
+    def open(self):
+        s3 = boto.connect_s3()
+        bucket = s3.get_bucket(self.bucket)
+        key = bucket.new_key(self.key)
+        contents = key.get_contents_as_string()
+        ret = io.BytesIO(bytes(contents))
+        return ret
+
+    def __repr__(self):
+        return "{}('{}')".format(self.__class__.__name__, self.path)
