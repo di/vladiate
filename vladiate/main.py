@@ -6,6 +6,7 @@ import sys
 import inspect
 import logging
 from optparse import OptionParser
+from pkg_resources import get_distribution
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("vlad_logger")
@@ -143,7 +144,7 @@ def main():
     parser, options, arguments = parse_options()
 
     if options.show_version:
-        print "Vladiate %s" % (vladiate.version, )
+        print "Vladiate %s" % (get_distribution('vladiate').version, )
         sys.exit(0)
 
     vladfile = find_vladfile(options.vladfile)
