@@ -178,7 +178,7 @@ def main():
         vlad_classes = vlads.values()
 
     # validate all the vlads
-    for name, vlad in vlads.iteritems():
+    for vlad in vlad_classes:
         vlad().validate()
 
 
