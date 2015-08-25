@@ -87,6 +87,23 @@ def test_unique_validator_fails(fields, row, unique_with):
             v.validate(field, row)
 
 
+@pytest.mark.parametrize('pattern, field', [
+    (r'foo.*', 'foo'),
+    (r'foo.*', 'foobar'),
+])
+def test_regex_validator_works(pattern, field):
+    RegexValidator(pattern).validate(field)
+
+
+@pytest.mark.parametrize('pattern, field', [
+    (r'foo.*', 'afoo'),
+    (r'^$', 'foo'),
+])
+def test_regex_validator_fails(pattern, field):
+    with pytest.raises(ValidationException):
+        RegexValidator(pattern).validate(field)
+
+
 def test_empty_validator_works():
     EmptyValidator().validate("")
 

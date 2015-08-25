@@ -1,3 +1,5 @@
+import re
+
 from vladiate.exceptions import ValidationException
 
 
@@ -102,6 +104,25 @@ class UniqueValidator(Validator):
     @property
     def bad(self):
         return self.duplicates
+
+
+class RegexValidator(Validator):
+    ''' Validates that a field matches a given regex '''
+
+    def __init__(self, pattern=r'di^'):
+        super(RegexValidator, self).__init__()
+        self.regex = re.compile(pattern)
+        self.failures = set([])
+
+    def validate(self, field, row={}):
+        if not self.regex.match(field):
+            self.failures.add(field)
+            raise ValidationException(
+                "'{}' does not match pattern /{}/".format(field, self.regex))
+
+    @property
+    def bad(self):
+        return self.failures
 
 
 class EmptyValidator(Validator):

@@ -227,6 +227,13 @@ Vladiate comes with a few common validators built-in:
   :``unique_with=[]``:
       List of field names to make the primary field unique with.
 
+*class* ``RegexValidator``
+
+  Validates whether a field matches the given regex using `re.match()`.
+
+  :``pattern=r'di^'``:
+      The regex pattern. Fails for all fields by default.
+
 *class* ``EmptyValidator``
 
   Ensure that a field is always empty. Essentially the same as an empty
