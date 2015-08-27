@@ -1,6 +1,6 @@
 import re
 
-from vladiate.exceptions import ValidationException
+from vladiate.exceptions import ValidationException, BadValidatorException
 
 
 class Validator(object):
@@ -86,8 +86,18 @@ class UniqueValidator(Validator):
         self.unique_values = set([])
         self.duplicates = set([])
         self.unique_with = unique_with
+        self.unique_check = False
+
+    def _precheck_unique_with(self, row):
+        extra = set(self.unique_with) - set(row.keys())
+        if extra:
+            raise BadValidatorException(extra)
+        self.unique_check = True
 
     def validate(self, field, row={}):
+        if self.unique_with and not self.unique_check:
+            self._precheck_unique_with(row)
+
         key = tuple([field] + [row[k] for k in self.unique_with])
         if key not in self.unique_values:
             self.unique_values.add(key)

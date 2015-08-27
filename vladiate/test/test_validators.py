@@ -13,6 +13,9 @@ class FakeRow(object):
     def __getitem__(self, key):
         return self.fields[key].pop(0)
 
+    def keys(self):
+        return self.fields.keys()
+
 
 @pytest.mark.parametrize('field', [('42'), ('42.0'), ('-42.0'), ])
 def test_float_validator_works(field):
@@ -76,12 +79,15 @@ def test_unique_validator_works(fields, row, unique_with):
         v.validate(field, row)
 
 
-@pytest.mark.parametrize('fields, row, unique_with', [
-    (['foo', 'bar', 'bar'], {}, []),
-    (['foo', 'foo'], FakeRow({'some_field': ['bar', 'bar']}), ['some_field']),
+@pytest.mark.parametrize('fields, row, unique_with, exception', [
+    (['foo', 'bar', 'bar'], {}, [], ValidationException),
+    (['foo', 'foo'], FakeRow({'some_field': ['bar', 'bar']}), ['some_field'],
+        ValidationException),
+    (['foo', 'foo'], FakeRow({'some_field': ['bar', 'bar']}), ['other_field'],
+        BadValidatorException),
 ])
-def test_unique_validator_fails(fields, row, unique_with):
-    with pytest.raises(ValidationException):
+def test_unique_validator_fails(fields, row, unique_with, exception):
+    with pytest.raises(exception):
         v = UniqueValidator(unique_with=unique_with)
         for field in fields:
             v.validate(field, row)
