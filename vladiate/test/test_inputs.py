@@ -7,7 +7,7 @@ from ..inputs import *
     ({'path':'s3://some.bucket/some/s3/key.csv'}),
     ({'bucket':'some.bucket', 'key':'/some/s3/key.csv'}),
 ])
-def test_float_validator_works(kwargs):
+def test_s3_input_works(kwargs):
     S3File(**kwargs)
 
 
@@ -18,6 +18,6 @@ def test_float_validator_works(kwargs):
     ({'bucket':'some.bucket'}),
     ({'key':'/some/s3/key.csv'}),
 ])
-def test_float_validator_fails(kwargs):
+def test_s3_input_fails(kwargs):
     with pytest.raises(ValueError):
         S3File(**kwargs)
