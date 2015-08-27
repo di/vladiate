@@ -7,11 +7,13 @@ from vladiate.validators import EmptyValidator
 
 
 class Vlad(object):
-    def __init__(self, default_validator=EmptyValidator):
+    def __init__(self, source, validators={}, default_validator=EmptyValidator):
         self.default_validator = default_validator
         self.logger = logging.getLogger("vlad_logger")
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_fields = None
+        self.source = source
+        self.validators = validators
 
     def _log_debug_failures(self):
         for field_name, field_failure in self.failures.iteritems():
@@ -64,9 +66,12 @@ class Vlad(object):
         if self.missing_fields:
             self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
+            return False
         elif self.failures:
             self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()
+            return False
         else:
             self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
+            return True

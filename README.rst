@@ -275,6 +275,27 @@ Vladiate comes with the following input types:
   :``key=None``:
       S3 key. Must be specified with a ``bucket``.
 
+Running Vlads Programatically
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*class* ``Vlad``
+
+  Initialize a Vlad programatically
+
+  :``source``:
+      Required. Any `VladInput`.
+
+  :``validators={}``:
+      List of validators. Optional, defaults to `EmptyValidator` for all fields.
+
+  For example:
+
+.. code:: python
+
+    from vladiate import Vlad
+    from vladiate.inputs import LocalFile
+    Vlad(source=LocalFile('path/to/local/file.csv').validate()
+
 Testing
 ~~~~~~~
 
