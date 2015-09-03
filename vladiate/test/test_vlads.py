@@ -4,6 +4,7 @@ from ..vlad import Vlad
 from ..inputs import *
 from ..validators import *
 
+
 def test_initialize_vlad():
     source = LocalFile('vladiate/examples/vampires.csv')
     validators = {
@@ -15,6 +16,7 @@ def test_initialize_vlad():
         ]
     }
     assert Vlad(source=source, validators=validators).validate()
+
 
 def test_initialize_vlad_no_source():
     with pytest.raises(TypeError):

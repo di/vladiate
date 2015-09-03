@@ -7,6 +7,7 @@ from vladiate.validators import EmptyValidator
 
 
 class Vlad(object):
+
     def __init__(self, source, validators={}, default_validator=EmptyValidator):
         self.default_validator = default_validator
         self.logger = logging.getLogger("vlad_logger")
@@ -40,13 +41,12 @@ class Vlad(object):
                         self.logger.error(
                             "    ({} more suppressed)".format(len(hidden)))
 
-
     def _log_missing_fields(self):
         self.logger.error("  Missing validators for:")
         self.logger.error(
             "{}".format("\n".join(["    '{}': [],".format(
                 field.encode('string-escape'))
-                                   for field in sorted(self.missing_fields)])))
+                for field in sorted(self.missing_fields)])))
 
     def validate(self):
         self.logger.info("\nValidating {}(source={})".format(
