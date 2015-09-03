@@ -9,7 +9,11 @@ from vladiate.validators import EmptyValidator
 class Vlad(object):
 
     def __init__(self, source, validators={}, default_validator=EmptyValidator):
-        self.default_validator = default_validator
+        validators.update({
+            field: [default_validator()]
+            for field, value in validators.iteritems() if not value
+        })
+
         self.logger = logging.getLogger("vlad_logger")
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_fields = None
@@ -51,11 +55,6 @@ class Vlad(object):
     def validate(self):
         self.logger.info("\nValidating {}(source={})".format(
             self.__class__.__name__, self.source))
-
-        self.validators.update({
-            field: [self.default_validator()]
-            for field, value in self.validators.iteritems() if not value
-        })
 
         reader = csv.DictReader(self.source.open())
         self.missing_fields = set(reader.fieldnames) - set(self.validators)
