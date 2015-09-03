@@ -7,10 +7,16 @@ from vladiate.validators import EmptyValidator
 
 
 class Vlad(object):
+
     def __init__(self, source, validators={}, default_validator=EmptyValidator):
-        self.default_validator = default_validator
+        validators.update({
+            field: [default_validator()]
+            for field, value in validators.iteritems() if not value
+        })
+
         self.logger = logging.getLogger("vlad_logger")
         self.failures = defaultdict(lambda: defaultdict(list))
+        self.missing_validators = None
         self.missing_fields = None
         self.source = source
         self.validators = validators
@@ -40,40 +46,47 @@ class Vlad(object):
                         self.logger.error(
                             "    ({} more suppressed)".format(len(hidden)))
 
+    def _log_missing_validators(self):
+        self.logger.error("  Missing validators for:")
+        self._log_missing(self.missing_validators)
 
     def _log_missing_fields(self):
-        self.logger.error("  Missing validators for:")
+        self.logger.error("  Missing expected fields:")
+        self._log_missing(self.missing_fields)
+
+    def _log_missing(self, missing_items):
         self.logger.error(
             "{}".format("\n".join(["    '{}': [],".format(
                 field.encode('string-escape'))
-                                   for field in sorted(self.missing_fields)])))
+                for field in sorted(missing_items)])))
 
     def validate(self):
         self.logger.info("\nValidating {}(source={})".format(
             self.__class__.__name__, self.source))
-
-        self.validators.update({
-            field: [self.default_validator()]
-            for field, value in self.validators.iteritems() if not value
-        })
-
         reader = csv.DictReader(self.source.open())
-        self.missing_fields = set(reader.fieldnames) - set(self.validators)
-        if not self.missing_fields:
-            for line, row in enumerate(reader):
-                for field_name, field in row.iteritems():
-                    for validator in self.validators[field_name]:
-                        try:
-                            validator.validate(field, row=row)
-                        except ValidationException, e:
-                            self.failures[field_name][line].append(e)
-                            validator.fail_count += 1
 
+        self.missing_validators = set(reader.fieldnames) - set(self.validators)
+        if self.missing_validators:
+            self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
+            self._log_missing_validators()
+            return False
+
+        self.missing_fields = set(self.validators) - set(reader.fieldnames)
         if self.missing_fields:
             self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
             return False
-        elif self.failures:
+
+        for line, row in enumerate(reader):
+            for field_name, field in row.iteritems():
+                for validator in self.validators[field_name]:
+                    try:
+                        validator.validate(field, row=row)
+                    except ValidationException, e:
+                        self.failures[field_name][line].append(e)
+                        validator.fail_count += 1
+
+        if self.failures:
             self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()
