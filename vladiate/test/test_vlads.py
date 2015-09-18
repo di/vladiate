@@ -38,3 +38,18 @@ def test_unused_validator_fails_validation():
     }
 
     assert not Vlad(source=source, validators=validators).validate()
+
+
+def test_validators_in_class_variable_are_used():
+    source = LocalFile('vladiate/examples/vampires.csv')
+    class TestVlad(Vlad):
+        validators = {
+            'Column A': [
+                UniqueValidator()
+            ],
+            'Column B': [
+                SetValidator(['Vampire', 'Not A Vampire'])
+            ]
+        }
+
+    assert TestVlad(source=source).validate()

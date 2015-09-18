@@ -9,17 +9,17 @@ from vladiate.validators import EmptyValidator
 class Vlad(object):
 
     def __init__(self, source, validators={}, default_validator=EmptyValidator):
-        validators.update({
-            field: [default_validator()]
-            for field, value in validators.iteritems() if not value
-        })
-
         self.logger = logging.getLogger("vlad_logger")
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
-        self.validators = validators
+        self.validators = validators or self.validators or {}
+
+        self.validators.update({
+            field: [default_validator()]
+            for field, value in self.validators.iteritems() if not value
+        })
 
     def _log_debug_failures(self):
         for field_name, field_failure in self.failures.iteritems():
