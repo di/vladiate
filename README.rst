@@ -104,7 +104,7 @@ we would get the following error:
 
 ::
 
-    Validating YourFirstValidator(source=LocalFile('potential_vampires.csv'))
+    Validating YourFirstFailingValidator(source=LocalFile('potential_vampires.csv'))
     Failed :(
       SetValidator failed 1 time(s) on field: 'Column B'
         Invalid fields: ['Maybe A Vampire']
@@ -286,7 +286,8 @@ Running Vlads Programatically
       Required. Any `VladInput`.
 
   :``validators={}``:
-      List of validators. Optional, defaults to `EmptyValidator` for all fields.
+      List of validators. Optional, defaults to the class variable `validators`
+      if set, otherwise uses `EmptyValidator` for all fields.
 
   For example:
 
@@ -309,6 +310,7 @@ Authors
 -------
 
 -  `Dustin Ingram <https://github.com/di>`__
+-  `Clara Bennett<https://github.com/csojinb>`__
 
 License
 -------
