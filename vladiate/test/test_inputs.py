@@ -1,6 +1,8 @@
 import pytest
 
 from ..inputs import *
+from ..validators import *
+from ..vlad import *
 
 
 @pytest.mark.parametrize('kwargs', [
@@ -21,3 +23,13 @@ def test_s3_input_works(kwargs):
 def test_s3_input_fails(kwargs):
     with pytest.raises(ValueError):
         S3File(**kwargs)
+
+
+@pytest.mark.parametrize('kwargs', [
+    ({'string_input':'ColA,ColB\n,'}),
+    ({'string_io':StringIO('ColA,ColB\n,')}),
+])
+def test_string_input_works(kwargs):
+    source = String(**kwargs)
+    validators = {'ColA': [], 'ColB': []}
+    assert Vlad(source=source, validators=validators).validate()

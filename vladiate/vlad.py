@@ -14,7 +14,7 @@ class Vlad(object):
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
-        self.validators = validators or self.validators or {}
+        self.validators = validators or getattr(self, 'validators', {})
 
         self.validators.update({
             field: [default_validator()]

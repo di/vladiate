@@ -1,6 +1,7 @@
 import io
 import boto
 from urlparse import urlparse
+from StringIO import StringIO
 
 
 class VladInput(object):
@@ -56,3 +57,16 @@ class S3File(VladInput):
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.path)
+
+
+class String(VladInput):
+    ''' Read a file from a string '''
+
+    def __init__(self, string_input=None, string_io=None):
+        self.string_io = string_io if string_io else StringIO(string_input)
+
+    def open(self):
+        return self.string_io
+
+    def __repr__(self):
+        return "{}('{}')".format(self.__class__.__name__, '...')
