@@ -1,15 +1,15 @@
 import sys
 import csv
-import logging
 from collections import defaultdict
 from vladiate.exceptions import ValidationException
 from vladiate.validators import EmptyValidator
+from vladiate import logs
 
 
 class Vlad(object):
 
     def __init__(self, source, validators={}, default_validator=EmptyValidator):
-        self.logger = logging.getLogger("vlad_logger")
+        self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None

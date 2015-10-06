@@ -1,20 +1,12 @@
 import vladiate
 from vladiate import Vlad
+from vladiate import logs
 
 import os
 import sys
 import inspect
-import logging
 from optparse import OptionParser
 from pkg_resources import get_distribution
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("vlad_logger")
-sh = logging.StreamHandler()
-sh.setLevel(logging.INFO)
-sh.setFormatter(logging.Formatter('%(message)s'))
-logger.addHandler(sh)
-logger.propagate = False
 
 
 def parse_options():
@@ -142,6 +134,7 @@ def load_vladfile(path):
 
 def main():
     parser, options, arguments = parse_options()
+    logger = logs.logger
 
     if options.show_version:
         print "Vladiate %s" % (get_distribution('vladiate').version, )
