@@ -25,7 +25,7 @@ class Vlad(object):
         for field_name, field_failure in self.failures.iteritems():
             self.logger.debug("\nFailure on field: \"{}\":".format(field_name))
             for i, (row, errors) in enumerate(field_failure.iteritems()):
-                self.logger.debug("  {}:{}".format(self.source.filename, row))
+                self.logger.debug("  {}:{}".format(self.source, row))
                 for error in errors:
                     self.logger.debug("    {}".format(error))
 
