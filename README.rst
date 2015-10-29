@@ -289,6 +289,9 @@ Running Vlads Programatically
       List of validators. Optional, defaults to the class variable `validators`
       if set, otherwise uses `EmptyValidator` for all fields.
 
+  :``delimiter=','``:
+      The delimiter used within your csv source. Optional, defaults to `,`.
+
   For example:
 
 .. code:: python

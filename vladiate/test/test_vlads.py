@@ -18,6 +18,20 @@ def test_initialize_vlad():
     assert Vlad(source=source, validators=validators).validate()
 
 
+def test_initialize_vlad_with_alternative_delimiter():
+    source = LocalFile('vladiate/examples/bats.csv')
+    validators = {
+        'Column A': [
+            UniqueValidator()
+        ],
+        'Column B': [
+            SetValidator(['Vampire', 'Not A Vampire'])
+        ]
+    }
+    delimiter = '|'
+    assert Vlad(source=source, validators=validators, delimiter=delimiter).validate()
+
+
 def test_initialize_vlad_no_source():
     with pytest.raises(TypeError):
         Vlad().validate()

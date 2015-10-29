@@ -172,7 +172,7 @@ def main():
 
     # validate all the vlads
     for vlad in vlad_classes:
-        vlad(vlad.source, validators=vlad.validators).validate()
+        vlad(vlad.source, validators=vlad.validators, delimiter=vlad.delimiter).validate()
 
 
 if __name__ == '__main__':
