@@ -140,7 +140,7 @@ def load_vladfile(path):
 
 def _vladiate(vlad):
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=v.validators).validate())
+    result_queue.put(vlad(vlad.source, validators=vlad.validators).validate())
 
 result_queue = Queue()
 def main():
