@@ -332,6 +332,7 @@ Authors
 
 -  `Dustin Ingram <https://github.com/di>`__
 -  `Clara Bennett <https://github.com/csojinb>`__
+-  `Aditya Natraj <https://github.com/adityanatra>`__
 
 License
 -------
