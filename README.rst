@@ -309,11 +309,29 @@ To run the tests
 
     python setup.py test
 
+
+Command Line Arguments
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+    Usage: vladiate [options] [VladClass [VladClass2 ... ]]
+
+    Options:
+      -h, --help            show this help message and exit
+      -f VLADFILE, --vladfile=VLADFILE
+                            Python module file to import, e.g. '../other.py'.
+                            Default: vladfile
+      -l, --list            Show list of possible vladiate classes and exit
+      -V, --version         show version number and exit
+      -p PROCESSES, --processes=PROCESSES
+                            attempt to use this number of processes, Default: 1
+
 Authors
 -------
 
 -  `Dustin Ingram <https://github.com/di>`__
--  `Clara Bennett<https://github.com/csojinb>`__
+-  `Clara Bennett <https://github.com/csojinb>`__
 
 License
 -------
