@@ -1,4 +1,3 @@
-import sys
 import csv
 from collections import defaultdict
 from vladiate.exceptions import ValidationException
@@ -8,13 +7,15 @@ from vladiate import logs
 
 class Vlad(object):
 
-    def __init__(self, source, validators={}, default_validator=EmptyValidator):
+    def __init__(self, source, validators={}, default_validator=EmptyValidator,
+                 delimiter=None):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
         self.validators = validators or getattr(self, 'validators', {})
+        self.delimiter = delimiter or getattr(self, 'delimiter', ',')
 
         self.validators.update({
             field: [default_validator()]
@@ -63,7 +64,7 @@ class Vlad(object):
     def validate(self):
         self.logger.info("\nValidating {}(source={})".format(
             self.__class__.__name__, self.source))
-        reader = csv.DictReader(self.source.open())
+        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)
         if self.missing_validators:
