@@ -275,6 +275,16 @@ Vladiate comes with the following input types:
   :``key=None``:
       S3 key. Must be specified with a ``bucket``.
 
+*class* ``String``
+
+  Read CSV from a string. Can take either an ``str`` or a ``StringIO``.
+
+  :``string_input=None``
+      Regular Python string input.
+
+  :``string_io=None``
+      ``StringIO`` input.
+
 Running Vlads Programatically
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
