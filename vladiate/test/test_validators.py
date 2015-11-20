@@ -101,6 +101,10 @@ def test_regex_validator_works(pattern, field):
     RegexValidator(pattern).validate(field)
 
 
+def test_regex_validator_allows_empty():
+    RegexValidator(r'foo.*', empty_ok=True).validate('')
+
+
 @pytest.mark.parametrize('pattern, field', [
     (r'foo.*', 'afoo'),
     (r'^$', 'foo'),

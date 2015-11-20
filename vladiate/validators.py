@@ -119,13 +119,14 @@ class UniqueValidator(Validator):
 class RegexValidator(Validator):
     ''' Validates that a field matches a given regex '''
 
-    def __init__(self, pattern=r'di^'):
+    def __init__(self, pattern=r'di^', empty_ok=False):
         super(RegexValidator, self).__init__()
         self.regex = re.compile(pattern)
+        self.empty_ok = empty_ok
         self.failures = set([])
 
     def validate(self, field, row={}):
-        if not self.regex.match(field):
+        if not self.regex.match(field) and (field or not self.empty_ok):
             self.failures.add(field)
             raise ValidationException(
                 "'{}' does not match pattern /{}/".format(field, self.regex))
