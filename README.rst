@@ -1,6 +1,9 @@
 Vladiate
 ========
 
+.. image:: https://travis-ci.org/di/vladiate.svg?branch=master
+    :target: https://travis-ci.org/di/vladiate
+
 Description
 -----------
 
