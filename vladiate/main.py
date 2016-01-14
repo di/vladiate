@@ -181,16 +181,22 @@ def main():
     else:
         vlad_classes = vlads.values()
 
-    # validate all the vlads, and collect the validations for a good exit return code
-    proc_pool = Pool(options.processes
-                     if options.processes <= vlad_classes else vlad_classes)
-    proc_pool.map(_vladiate, vlad_classes)
-    try:
-        if not result_queue.get_nowait():
-            return os.EX_DATAERR
-    except Empty:
-        pass
-    return os.EX_OK
+    # validate all the vlads, and collect the validations for a good exit
+    # return code
+    if options.processes == 1:
+        for vlad in vlad_classes:
+            vlad(source=vlad.source).validate()
+
+    else:
+        proc_pool = Pool(options.processes
+                        if options.processes <= vlad_classes else vlad_classes)
+        proc_pool.map(_vladiate, vlad_classes)
+        try:
+            if not result_queue.get_nowait():
+                return os.EX_DATAERR
+        except Empty:
+            pass
+        return os.EX_OK
 
 if __name__ == '__main__':
     exit(main())
