@@ -4,6 +4,9 @@ Vladiate
 .. image:: https://travis-ci.org/di/vladiate.svg?branch=master
     :target: https://travis-ci.org/di/vladiate
 
+.. image:: https://coveralls.io/repos/di/vladiate/badge.svg?branch=master
+    :target: https://coveralls.io/github/di/vladiate
+
 Description
 -----------
 
