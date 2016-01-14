@@ -6,20 +6,24 @@ from vladiate import logs
 import os
 import sys
 import inspect
-from optparse import OptionParser
+from argparse import ArgumentParser
 from pkg_resources import get_distribution
 
-def parse_options():
+def parse_args():
     """
-    Handle command-line options with optparse.OptionParser.
+    Handle command-line arguments with argparse.ArgumentParser
     Return list of arguments, largely for use in `parse_arguments`.
     """
 
     # Initialize
-    parser = OptionParser(
-        usage="vladiate [options] [VladClass [VladClass2 ... ]]")
+    parser = ArgumentParser(
+        description="vladiate [options] [VladClass [VladClass2 ... ]]")
 
-    parser.add_option(
+    parser.add_argument('vlads', metavar='vlads', type=str, nargs='*',
+                        help='A list of Vlad classes to validate')
+
+    # Specify the vladfile to be something other than vladfile.py
+    parser.add_argument(
         '-f', '--vladfile',
         dest='vladfile',
         default='vladfile',
@@ -27,33 +31,30 @@ def parse_options():
         "Python module file to import, e.g. '../other.py'. Default: vladfile")
 
     # List vladiate commands found in loaded vladiate files/source files
-    parser.add_option(
+    parser.add_argument(
         '-l', '--list',
         action='store_true',
         dest='list_commands',
         default=False,
         help="Show list of possible vladiate classes and exit")
 
-    # Version number (optparse gives you --version but we have to do it
-    # ourselves to get -V too. sigh)
-    parser.add_option(
+    # Version number
+    parser.add_argument(
         '-V', '--version',
         action='store_true',
         dest='show_version',
         default=False,
         help="show program's version number and exit")
 
-    parser.add_option(
+    # Maximum number of processes to attempt to use
+    parser.add_argument(
         '-p', '--processes',
         dest='processes',
         default=1,
-        type='int',
+        type=int,
         help="attempt to use this number of processes")
 
-    # Finalize
-    # Return three-tuple of parser + the output from parse_args (opt obj, args)
-    opts, args = parser.parse_args()
-    return parser, opts, args
+    return parser.parse_args()
 
 
 def is_vlad(tup):
@@ -144,14 +145,14 @@ def _vladiate(vlad):
 
 result_queue = Queue()
 def main():
-    parser, options, arguments = parse_options()
+    arguments = parse_args()
     logger = logs.logger
 
-    if options.show_version:
+    if arguments.show_version:
         print "Vladiate %s" % (get_distribution('vladiate').version, )
         return os.EX_OK
 
-    vladfile = find_vladfile(options.vladfile)
+    vladfile = find_vladfile(arguments.vladfile)
     if not vladfile:
         logger.error(
             "Could not find any vladfile! Ensure file ends in '.py' and see --help for available options.")
@@ -159,7 +160,7 @@ def main():
 
     docstring, vlads = load_vladfile(vladfile)
 
-    if options.list_commands:
+    if arguments.list_commands:
         logger.info("Available vlads:")
         for name in vlads:
             logger.info("    " + name)
@@ -170,26 +171,26 @@ def main():
         return os.EX_NOINPUT
 
     # make sure specified vlad exists
-    if arguments:
-        missing = set(arguments) - set(vlads.keys())
+    if arguments.vlads:
+        missing = set(arguments.vlads) - set(vlads.keys())
         if missing:
             logger.error("Unknown vlad(s): %s\n" % (", ".join(missing)))
             return os.EX_UNAVAILABLE
         else:
-            names = set(arguments) & set(vlads.keys())
+            names = set(arguments.vlads) & set(vlads.keys())
             vlad_classes = [vlads[n] for n in names]
     else:
         vlad_classes = vlads.values()
 
     # validate all the vlads, and collect the validations for a good exit
     # return code
-    if options.processes == 1:
+    if arguments.processes == 1:
         for vlad in vlad_classes:
             vlad(source=vlad.source).validate()
 
     else:
-        proc_pool = Pool(options.processes
-                        if options.processes <= vlad_classes else vlad_classes)
+        proc_pool = Pool(arguments.processes
+                        if arguments.processes <= vlad_classes else vlad_classes)
         proc_pool.map(_vladiate, vlad_classes)
         try:
             if not result_queue.get_nowait():
