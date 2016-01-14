@@ -1,7 +1,13 @@
 import io
 import boto
-from urlparse import urlparse
-from StringIO import StringIO
+try:
+    from urlparse import urlparse
+except:
+    from urllib.parse import urlparse
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 
 class VladInput(object):

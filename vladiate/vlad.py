@@ -19,19 +19,19 @@ class Vlad(object):
 
         self.validators.update({
             field: [default_validator()]
-            for field, value in self.validators.iteritems() if not value
+            for field, value in self.validators.items() if not value
         })
 
     def _log_debug_failures(self):
-        for field_name, field_failure in self.failures.iteritems():
+        for field_name, field_failure in self.failures.items():
             self.logger.debug("\nFailure on field: \"{}\":".format(field_name))
-            for i, (row, errors) in enumerate(field_failure.iteritems()):
+            for i, (row, errors) in enumerate(field_failure.items()):
                 self.logger.debug("  {}:{}".format(self.source, row))
                 for error in errors:
                     self.logger.debug("    {}".format(error))
 
     def _log_validator_failures(self):
-        for field_name, validators_list in self.validators.iteritems():
+        for field_name, validators_list in self.validators.items():
             for validator in validators_list:
                 if validator.bad:
                     self.logger.error(
@@ -57,8 +57,8 @@ class Vlad(object):
 
     def _log_missing(self, missing_items):
         self.logger.error(
-            "{}".format("\n".join(["    '{}': [],".format(
-                field.encode('string-escape'))
+            "{}".format("\n".join([
+                "    '{}': [],".format(field)
                 for field in sorted(missing_items)])))
 
     def validate(self):
@@ -83,11 +83,11 @@ class Vlad(object):
             return False
 
         for line, row in enumerate(reader):
-            for field_name, field in row.iteritems():
+            for field_name, field in row.items():
                 for validator in self.validators[field_name]:
                     try:
                         validator.validate(field, row=row)
-                    except ValidationException, e:
+                    except ValidationException as e:
                         self.failures[field_name][line].append(e)
                         validator.fail_count += 1
 

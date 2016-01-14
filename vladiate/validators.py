@@ -30,7 +30,7 @@ class CastValidator(Validator):
         try:
             if (field or not self.empty_ok):
                 self.cast(field)
-        except ValueError, e:
+        except ValueError as e:
             self.invalid_set.add(field)
             raise ValidationException(e)
 
