@@ -149,7 +149,7 @@ def main():
     logger = logs.logger
 
     if arguments.show_version:
-        print "Vladiate %s" % (get_distribution('vladiate').version, )
+        print("Vladiate %s" % (get_distribution('vladiate').version, ))
         return os.EX_OK
 
     vladfile = find_vladfile(arguments.vladfile)
