@@ -7,6 +7,10 @@ Vladiate
 .. image:: https://coveralls.io/repos/di/vladiate/badge.svg?branch=master
     :target: https://coveralls.io/github/di/vladiate
 
+.. image:: https://requires.io/github/di/vladiate/requirements.svg?branch=master
+     :target: https://requires.io/github/di/vladiate/requirements/?branch=master
+     :alt: Requirements Status
+
 Description
 -----------
 
