@@ -30,7 +30,8 @@ class LocalFile(VladInput):
         self.filename = filename
 
     def open(self):
-        return open(self.filename, 'r')
+        with open(self.filename, 'r') as f:
+            return f.readlines()
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.filename)
