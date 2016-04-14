@@ -9,6 +9,7 @@ import inspect
 from argparse import ArgumentParser
 from pkg_resources import get_distribution
 
+
 def parse_args():
     """
     Handle command-line arguments with argparse.ArgumentParser
@@ -27,8 +28,7 @@ def parse_args():
         '-f', '--vladfile',
         dest='vladfile',
         default='vladfile',
-        help=
-        "Python module file to import, e.g. '../other.py'. Default: vladfile")
+        help="Python module to import, e.g. '../other.py'. Default: vladfile")
 
     # List vladiate commands found in loaded vladiate files/source files
     parser.add_argument(
@@ -139,11 +139,15 @@ def load_vladfile(path):
     vlads = dict(filter(is_vlad, vars(imported).items()))
     return imported.__doc__, vlads
 
+
 def _vladiate(vlad):
     global result_queue
     result_queue.put(vlad(vlad.source, validators=vlad.validators).validate())
 
+
 result_queue = Queue()
+
+
 def main():
     arguments = parse_args()
     logger = logs.logger
@@ -155,7 +159,9 @@ def main():
     vladfile = find_vladfile(arguments.vladfile)
     if not vladfile:
         logger.error(
-            "Could not find any vladfile! Ensure file ends in '.py' and see --help for available options.")
+            "Could not find any vladfile! Ensure file ends in '.py' and see "
+            "--help for available options."
+        )
         return os.EX_NOINPUT
 
     docstring, vlads = load_vladfile(vladfile)
@@ -189,8 +195,11 @@ def main():
             vlad(source=vlad.source).validate()
 
     else:
-        proc_pool = Pool(arguments.processes
-                        if arguments.processes <= vlad_classes else vlad_classes)
+        proc_pool = Pool(
+            arguments.processes
+            if arguments.processes <= vlad_classes
+            else vlad_classes
+        )
         proc_pool.map(_vladiate, vlad_classes)
         try:
             if not result_queue.get_nowait():

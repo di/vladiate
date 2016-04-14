@@ -1,7 +1,10 @@
 import pytest
 
-from ..validators import *
-from ..exceptions import *
+from ..validators import (
+    EmptyValidator, FloatValidator, Ignore, IntValidator, RegexValidator,
+    SetValidator, UniqueValidator
+)
+from ..exceptions import BadValidatorException, ValidationException
 
 
 class FakeRow(object):

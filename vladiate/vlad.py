@@ -67,7 +67,9 @@ class Vlad(object):
         reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
-            self.logger.info("\033[1;33m" + "Source file has no field names" + "\033[0m")
+            self.logger.info(
+                "\033[1;33m" + "Source file has no field names" + "\033[0m"
+            )
             return False
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)

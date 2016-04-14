@@ -1,13 +1,12 @@
 import pytest
 
-from ..inputs import *
-from ..validators import *
-from ..vlad import *
+from ..inputs import S3File, StringIO, String
+from ..vlad import Vlad
 
 
 @pytest.mark.parametrize('kwargs', [
-    ({'path':'s3://some.bucket/some/s3/key.csv'}),
-    ({'bucket':'some.bucket', 'key':'/some/s3/key.csv'}),
+    ({'path': 's3://some.bucket/some/s3/key.csv'}),
+    ({'bucket': 'some.bucket', 'key': '/some/s3/key.csv'}),
 ])
 def test_s3_input_works(kwargs):
     S3File(**kwargs)
@@ -15,10 +14,10 @@ def test_s3_input_works(kwargs):
 
 @pytest.mark.parametrize('kwargs', [
     ({}),
-    ({'path':'s3://some.bucket/some/s3/key.csv', 'bucket':'some.bucket'}),
-    ({'path':'s3://some.bucket/some/s3/key.csv', 'key':'/some/s3/key.csv'}),
-    ({'bucket':'some.bucket'}),
-    ({'key':'/some/s3/key.csv'}),
+    ({'path': 's3://some.bucket/some/s3/key.csv', 'bucket': 'some.bucket'}),
+    ({'path': 's3://some.bucket/some/s3/key.csv', 'key': '/some/s3/key.csv'}),
+    ({'bucket': 'some.bucket'}),
+    ({'key': '/some/s3/key.csv'}),
 ])
 def test_s3_input_fails(kwargs):
     with pytest.raises(ValueError):
@@ -26,8 +25,8 @@ def test_s3_input_fails(kwargs):
 
 
 @pytest.mark.parametrize('kwargs', [
-    ({'string_input':'ColA,ColB\n,'}),
-    ({'string_io':StringIO('ColA,ColB\n,')}),
+    ({'string_input': 'ColA,ColB\n,'}),
+    ({'string_io': StringIO('ColA,ColB\n,')}),
 ])
 def test_string_input_works(kwargs):
     source = String(**kwargs)

@@ -8,11 +8,13 @@ python:
   - "3.5-dev" # 3.5 development branch
   - "nightly" # currently points to 3.6-dev
 install:
+  - pip install flake8
   - pip install coveralls
   # Coveralls 4.0 doesn't support Python 3.2
   - if [ "$TRAVIS_PYTHON_VERSION" == "3.2" ]; then travis_retry pip install coverage==3.7.1; fi
   - if [ "$TRAVIS_PYTHON_VERSION" != "3.2" ]; then travis_retry pip install coverage; fi
 script:
   - coverage run --source=vladiate setup.py test
+  - flake8 .
 after_success:
   - coveralls
