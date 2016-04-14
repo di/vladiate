@@ -1,4 +1,7 @@
-from Queue import Empty
+try:
+    from Queue import Empty
+except:
+    from queue import Empty
 from multiprocessing import Pool, Queue
 from vladiate import Vlad
 from vladiate import logs
@@ -68,10 +71,11 @@ def is_vlad(tup):
         hasattr(item, "validators") and not name.startswith('_'))
 
 
-def find_vladfile(vladfile):
+def find_vladfile(vladfile, path='.'):
     """
     Attempt to locate a vladfile, either explicitly or by searching parent dirs.
     """
+    assert os.path.isdir(path)
     # Obtain env value
     names = [vladfile]
     # Create .py version if necessary
@@ -86,17 +90,11 @@ def find_vladfile(vladfile):
                 if name.endswith('.py') or _is_package(expanded):
                     return os.path.abspath(expanded)
     else:
-        # Otherwise, start in cwd and work downwards towards filesystem root
-        path = '.'
-        # Stop before falling off root of filesystem (should be platform
-        # agnostic)
-        while os.path.split(os.path.abspath(path))[1]:
-            for name in names:
-                joined = os.path.join(path, name)
-                if os.path.exists(joined):
-                    if name.endswith('.py') or _is_package(joined):
-                        return os.path.abspath(joined)
-            path = os.path.join('..', path)
+        for name in names:
+            joined = os.path.join(path, name)
+            if os.path.exists(joined):
+                if name.endswith('.py') or _is_package(joined):
+                    return os.path.abspath(joined)
     # Implicit 'return None' if nothing was found
 
 
@@ -197,8 +195,8 @@ def main():
     else:
         proc_pool = Pool(
             arguments.processes
-            if arguments.processes <= vlad_classes
-            else vlad_classes
+            if arguments.processes <= len(vlad_classes)
+            else len(vlad_classes)
         )
         proc_pool.map(_vladiate, vlad_classes)
         try:
@@ -208,5 +206,9 @@ def main():
             pass
         return os.EX_OK
 
-if __name__ == '__main__':
-    exit(main())
+
+def run(name):
+    if name == '__main__':
+        exit(main())
+
+run(__name__)

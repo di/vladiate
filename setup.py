@@ -63,7 +63,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=['boto'],
-    tests_require=['pytest', 'flake8'],
+    tests_require=['pretend', 'pytest', 'flake8'],
     cmdclass={'test': PyTest},
     entry_points={
         'console_scripts': [

@@ -1,8 +1,9 @@
 import pytest
+from pretend import stub, call, call_recorder
 
 from ..validators import (
-    EmptyValidator, FloatValidator, Ignore, IntValidator, RegexValidator,
-    SetValidator, UniqueValidator
+    CastValidator, EmptyValidator, FloatValidator, Ignore, IntValidator,
+    RegexValidator, SetValidator, UniqueValidator, Validator
 )
 from ..exceptions import BadValidatorException, ValidationException
 
@@ -18,6 +19,26 @@ class FakeRow(object):
 
     def keys(self):
         return self.fields.keys()
+
+
+def test_cast_validator():
+
+    def _raise_valueerror(x):
+        raise ValueError
+
+    validator = CastValidator()
+    validator.cast = call_recorder(_raise_valueerror)
+
+    assert validator.bad == set()
+
+    with pytest.raises(ValidationException):
+        validator.validate('field', 'something')
+
+    assert validator.bad == {'field'}
+
+    assert validator.cast.calls == [
+        call('field')
+    ]
 
 
 @pytest.mark.parametrize('field', [('42'), ('42.0'), ('-42.0'), ])
@@ -54,7 +75,15 @@ def test_int_validator_fails(field):
     (['foo', 'bar'], 'foo'),
 ])
 def test_set_validator_works(field_set, field):
-    SetValidator(field_set).validate(field)
+    validator = SetValidator(field_set)
+    validator.validate(field)
+    assert field in validator.valid_set
+
+
+def test_set_validator_empty_ok():
+    validator = SetValidator(['foo'], empty_ok=True)
+    validator.validate('')
+    assert '' in validator.valid_set
 
 
 @pytest.mark.parametrize('field_set, field', [
@@ -63,8 +92,11 @@ def test_set_validator_works(field_set, field):
     (['foo', 'bar'], 'baz'),
 ])
 def test_set_validator_fails(field_set, field):
+    validator = SetValidator(field_set)
     with pytest.raises(ValidationException):
-        SetValidator(field_set).validate(field)
+        validator.validate(field)
+
+    assert validator.bad == {field}
 
 
 @pytest.mark.parametrize('fields, row, unique_with', [
@@ -77,23 +109,25 @@ def test_set_validator_fails(field_set, field):
     }), ['some_field', 'some_other_field']),
 ])
 def test_unique_validator_works(fields, row, unique_with):
-    v = UniqueValidator(unique_with=unique_with)
+    validator = UniqueValidator(unique_with=unique_with)
     for field in fields:
-        v.validate(field, row)
+        validator.validate(field, row)
 
 
-@pytest.mark.parametrize('fields, row, unique_with, exception', [
-    (['foo', 'bar', 'bar'], {}, [], ValidationException),
+@pytest.mark.parametrize('fields, row, unique_with, exception, bad', [
+    (['foo', 'bar', 'bar'], {}, [], ValidationException, {('bar',)}),
     (['foo', 'foo'], FakeRow({'some_field': ['bar', 'bar']}), ['some_field'],
-        ValidationException),
+        ValidationException, {('foo', 'bar')}),
     (['foo', 'foo'], FakeRow({'some_field': ['bar', 'bar']}), ['other_field'],
-        BadValidatorException),
+        BadValidatorException, set()),
 ])
-def test_unique_validator_fails(fields, row, unique_with, exception):
+def test_unique_validator_fails(fields, row, unique_with, exception, bad):
+    validator = UniqueValidator(unique_with=unique_with)
     with pytest.raises(exception):
-        v = UniqueValidator(unique_with=unique_with)
         for field in fields:
-            v.validate(field, row)
+            validator.validate(field, row)
+
+    assert validator.bad == bad
 
 
 @pytest.mark.parametrize('pattern, field', [
@@ -113,8 +147,11 @@ def test_regex_validator_allows_empty():
     (r'^$', 'foo'),
 ])
 def test_regex_validator_fails(pattern, field):
+    validator = RegexValidator(pattern)
     with pytest.raises(ValidationException):
-        RegexValidator(pattern).validate(field)
+        validator.validate(field)
+
+    assert validator.bad == {field}
 
 
 def test_empty_validator_works():
@@ -122,9 +159,24 @@ def test_empty_validator_works():
 
 
 def test_empty_validator_fails():
+    validator = EmptyValidator()
     with pytest.raises(ValidationException):
-        EmptyValidator().validate("foo")
+        validator.validate("foo")
+
+    assert validator.bad == {'foo'}
 
 
 def test_ignore_validator():
-    Ignore().validate("foo")
+    validator = Ignore()
+    validator.validate("foo")
+    assert validator.bad is None
+
+
+def test_base_class_raises():
+    validator = Validator()
+
+    with pytest.raises(NotImplementedError):
+        validator.bad()
+
+    with pytest.raises(NotImplementedError):
+        validator.validate(stub(), stub())
