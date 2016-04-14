@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-import sys, os
-from setuptools import setup, find_packages, Command
+import sys
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 version = '0.0.11'
@@ -20,7 +20,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
+        # import here, cause outside the eggs aren't loaded
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -63,7 +63,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=['boto'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'flake8'],
     cmdclass={'test': PyTest},
     entry_points={
         'console_scripts': [

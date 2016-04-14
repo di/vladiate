@@ -1,1 +1,1 @@
-from vladiate.vlad import Vlad
+from vladiate.vlad import Vlad  # NOQA

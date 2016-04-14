@@ -323,12 +323,17 @@ Running Vlads Programatically
 Testing
 ~~~~~~~
 
-To run the tests
+To run the tests:
 
 ::
 
-    python setup.py test
+    make test
 
+To run the linter:
+
+::
+
+    make lint
 
 Command Line Arguments
 ~~~~~~~~~~~~~~~~~~~~~~

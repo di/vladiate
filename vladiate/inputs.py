@@ -52,7 +52,9 @@ class S3File(VladInput):
             self.path = "s3://{}{}"
         else:
             raise ValueError(
-                "Either 'path' argument or 'bucket' and 'key' argument must be set.")
+                "Either 'path' argument or 'bucket' and 'key' argument must "
+                "be set."
+            )
 
     def open(self):
         s3 = boto.connect_s3()
