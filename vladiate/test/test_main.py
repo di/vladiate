@@ -6,7 +6,8 @@ import pytest
 from pretend import stub, call, call_recorder
 
 from ..main import (  # NOQA
-    parse_args, is_vlad, find_vladfile, load_vladfile, _vladiate, main, run
+    parse_args, is_vlad, find_vladfile, load_vladfile, _vladiate, main, run,
+    _is_package
 )
 
 from ..vlad import Vlad
@@ -286,3 +287,11 @@ def test_main_no_vladfile(monkeypatch):
         'vladiate.main.find_vladfile', lambda *args, **kwargs: None
     )
     assert main() == os.EX_NOINPUT
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('foo/bar', False),
+    ('vladiate/test', True),
+])
+def test_is_package(path, expected):
+    assert _is_package(path) == expected
