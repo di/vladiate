@@ -71,6 +71,16 @@ def is_vlad(tup):
         hasattr(item, "validators") and not name.startswith('_'))
 
 
+def _is_package(path):
+    """
+    Is the given path a Python package?
+    """
+    return (
+        os.path.isdir(path)
+        and os.path.exists(os.path.join(path, '__init__.py'))
+    )
+
+
 def find_vladfile(vladfile, path='.'):
     """
     Attempt to locate a vladfile, either explicitly or by searching parent dirs.
