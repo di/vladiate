@@ -16,6 +16,7 @@ class Vlad(object):
         self.source = source
         self.validators = validators or getattr(self, 'validators', {})
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
+        self.line_count = 0
 
         self.validators.update({
             field: [default_validator()]
@@ -35,9 +36,9 @@ class Vlad(object):
             for validator in validators_list:
                 if validator.bad:
                     self.logger.error(
-                        "  {} failed {} time(s) on field: '{}'".format(
+                        "  {} failed {} ({:.2%}) time(s) on field: '{}'".format(
                             validator.__class__.__name__, validator.fail_count,
-                            field_name))
+                            validator.fail_count/self.line_count, field_name))
                     invalid = list(validator.bad)
                     shown = ["'{}'".format(field) for field in invalid[:99]]
                     hidden = ["'{}'".format(field) for field in invalid[99:]]
