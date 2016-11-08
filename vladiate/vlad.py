@@ -16,7 +16,7 @@ class Vlad(object):
         self.source = source
         self.validators = validators or getattr(self, 'validators', {})
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
-        self.line_count = 1
+        self.line_count = 0
 
         self.validators.update({
             field: [default_validator()]
@@ -87,6 +87,7 @@ class Vlad(object):
             return False
 
         for line, row in enumerate(reader):
+            self.line_count = line
             for field_name, field in row.items():
                 for validator in self.validators[field_name]:
                     try:
