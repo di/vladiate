@@ -36,10 +36,9 @@ class Vlad(object):
             for validator in validators_list:
                 if validator.bad:
                     self.logger.error(
-                        "  {} failed {} out of {}({:.2%}) time(s) on field: '{}'".format(
+                        "  {} failed {} time(s) ({:.1%}) on field: '{}'".format(
                             validator.__class__.__name__, validator.fail_count,
-                            self.line_count, validator.fail_count/self.line_count,
-                            field_name))
+                            validator.fail_count/self.line_count, field_name))
                     invalid = list(validator.bad)
                     shown = ["'{}'".format(field) for field in invalid[:99]]
                     hidden = ["'{}'".format(field) for field in invalid[99:]]
