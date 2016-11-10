@@ -1,4 +1,5 @@
 import csv
+from __future__ import division
 from collections import defaultdict
 from vladiate.exceptions import ValidationException
 from vladiate.validators import EmptyValidator
