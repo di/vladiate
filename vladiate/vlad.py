@@ -86,7 +86,7 @@ class Vlad(object):
             return False
 
         for line, row in enumerate(reader):
-            self.line_count = line
+            self.line_count += 1
             for field_name, field in row.items():
                 for validator in self.validators[field_name]:
                     try:
