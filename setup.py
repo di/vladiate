@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-version = '0.0.11'
+version = '0.0.13'
 
 
 class PyTest(TestCommand):

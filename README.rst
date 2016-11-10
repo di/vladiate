@@ -116,7 +116,7 @@ we would get the following error:
 
     Validating YourFirstFailingValidator(source=LocalFile('potential_vampires.csv'))
     Failed :(
-      SetValidator failed 1 time(s) on field: 'Column B'
+      SetValidator failed 1 time(s) (25.0%) on field: 'Column B'
         Invalid fields: ['Maybe A Vampire']
 
 And we would know that we'd either need to sanitize this field, or add
@@ -177,11 +177,11 @@ When we run *this* with ``vladiate``, we get:
 
     Validating YourSecondEmptyValidator(source=LocalFile('real_vampires.csv'))
     Failed :(
-      EmptyValidator failed 4 time(s) on field: 'Column A'
+      EmptyValidator failed 4 time(s) (100.0%) on field: 'Column A'
         Invalid fields: ['Dracula', 'Vlad the Impaler', 'Count Chocula', 'Ronald Reagan']
-      EmptyValidator failed 4 time(s) on field: 'Column B'
+      EmptyValidator failed 4 time(s) (100.0%) on field: 'Column B'
         Invalid fields: ['Maybe A Vampire', 'Not A Vampire', 'Vampire']
-      EmptyValidator failed 4 time(s) on field: 'Column C'
+      EmptyValidator failed 4 time(s) (100.0%) on field: 'Column C'
         Invalid fields: ['Real', 'Not Real']
 
 This is because Vladiate interprets an empty list of validators for a
@@ -358,6 +358,7 @@ Authors
 -  `Dustin Ingram <https://github.com/di>`__
 -  `Clara Bennett <https://github.com/csojinb>`__
 -  `Aditya Natraj <https://github.com/adityanatra>`__
+-  `Sterling Petersen <https://github.com/sterlingpetersen>`__
 
 License
 -------
