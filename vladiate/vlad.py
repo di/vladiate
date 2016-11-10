@@ -1,3 +1,4 @@
+from __future__ import division
 import csv
 from collections import defaultdict
 from vladiate.exceptions import ValidationException
@@ -16,6 +17,7 @@ class Vlad(object):
         self.source = source
         self.validators = validators or getattr(self, 'validators', {})
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
+        self.line_count = 0
 
         self.validators.update({
             field: [default_validator()]
@@ -35,9 +37,9 @@ class Vlad(object):
             for validator in validators_list:
                 if validator.bad:
                     self.logger.error(
-                        "  {} failed {} time(s) on field: '{}'".format(
+                        "  {} failed {} time(s) ({:.1%}) on field: '{}'".format(
                             validator.__class__.__name__, validator.fail_count,
-                            field_name))
+                            validator.fail_count/self.line_count, field_name))
                     invalid = list(validator.bad)
                     shown = ["'{}'".format(field) for field in invalid[:99]]
                     hidden = ["'{}'".format(field) for field in invalid[99:]]
@@ -85,6 +87,7 @@ class Vlad(object):
             return False
 
         for line, row in enumerate(reader):
+            self.line_count += 1
             for field_name, field in row.items():
                 for validator in self.validators[field_name]:
                     try:
