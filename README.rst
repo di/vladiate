@@ -312,6 +312,10 @@ Running Vlads Programatically
   :``delimiter=','``:
       The delimiter used within your csv source. Optional, defaults to `,`.
 
+  :``ignore_missing_validators=False``:
+      Whether to fail validation if there are fields in the file for which the
+      `Vlad` does not have validators. Optional, defaults to `False`.
+
   For example:
 
 .. code:: python

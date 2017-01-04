@@ -128,3 +128,19 @@ def test_gt_99_failures():
         }
 
     assert not TestVlad(source=source).validate()
+
+
+def test_ignore_missing_validators():
+    source = LocalFile('vladiate/examples/vampires.csv')
+
+    class TestVlad(Vlad):
+        validators = {
+            'Column A': [
+                UniqueValidator()
+            ],
+        }
+
+    vlad = TestVlad(source=source, ignore_missing_validators=True)
+
+    assert vlad.validate()
+    assert vlad.missing_validators == {'Column B'}

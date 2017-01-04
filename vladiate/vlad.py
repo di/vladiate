@@ -9,7 +9,7 @@ from vladiate import logs
 class Vlad(object):
 
     def __init__(self, source, validators={}, default_validator=EmptyValidator,
-                 delimiter=None):
+                 delimiter=None, ignore_missing_validators=False):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
@@ -18,6 +18,7 @@ class Vlad(object):
         self.validators = validators or getattr(self, 'validators', {})
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
         self.line_count = 0
+        self.ignore_missing_validators = ignore_missing_validators
 
         self.validators.update({
             field: [default_validator()]
@@ -78,7 +79,9 @@ class Vlad(object):
         if self.missing_validators:
             self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_validators()
-            return False
+
+            if not self.ignore_missing_validators:
+                return False
 
         self.missing_fields = set(self.validators) - set(reader.fieldnames)
         if self.missing_fields:
@@ -89,12 +92,13 @@ class Vlad(object):
         for line, row in enumerate(reader):
             self.line_count += 1
             for field_name, field in row.items():
-                for validator in self.validators[field_name]:
-                    try:
-                        validator.validate(field, row=row)
-                    except ValidationException as e:
-                        self.failures[field_name][line].append(e)
-                        validator.fail_count += 1
+                if field_name in self.validators:
+                    for validator in self.validators[field_name]:
+                        try:
+                            validator.validate(field, row=row)
+                        except ValidationException as e:
+                            self.failures[field_name][line].append(e)
+                            validator.fail_count += 1
 
         if self.failures:
             self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
