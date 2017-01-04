@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-version = '0.0.13'
+__version__ = '0.0.14'
 
 
 class PyTest(TestCommand):
@@ -33,7 +33,7 @@ def readme():
 
 setup(
     name='vladiate',
-    version=version,
+    version=__version__,
     description="Vladiate is a strict validation tool for CSV files",
     classifiers=[
         "Development Status :: 4 - Beta",
