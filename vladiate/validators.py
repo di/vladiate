@@ -168,7 +168,8 @@ class EmptyValidator(Validator):
         if field != '':
             self.nonempty.add(field)
             raise ValidationException(
-                "'{}' is not an empty string".format(field))
+                "'{}' is not an empty string".format(field)
+            )
 
     @property
     def bad(self):
