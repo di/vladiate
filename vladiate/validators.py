@@ -136,6 +136,27 @@ class RegexValidator(Validator):
         return self.failures
 
 
+class RangeValidator(Validator):
+    def __init__(self, low, high):
+        self.fail_count = 0
+        self.low = low
+        self.high = high
+        self.outside = set()
+
+    def validate(self, field, row={}):
+        if not self.low <= float(field) <= self.high:
+            self.outside.add(field)
+            raise ValidationException(
+                "'{}' is not in range {} to {}".format(
+                    field, self.low, self.high
+                )
+            )
+
+    @property
+    def bad(self):
+        return self.outside
+
+
 class EmptyValidator(Validator):
     ''' Validates that a field is always empty '''
 
