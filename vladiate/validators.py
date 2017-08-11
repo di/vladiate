@@ -175,6 +175,23 @@ class EmptyValidator(Validator):
         return self.nonempty
 
 
+class NotEmptyValidator(Validator):
+    ''' Validates that a field is not empty '''
+
+    def __init__(self):
+        self.fail_count = 0
+
+    def validate(self, field, row={}):
+        if field == '':
+            raise ValidationException("Row has emtpy field in column")
+
+    @property
+    def bad(self):
+        # Return an empty set to conform to the protocol. The 'bad' fields
+        # would all be empty strings anyways
+        return set()
+
+
 class Ignore(Validator):
     ''' Ignore a given field. Never fails '''
 
