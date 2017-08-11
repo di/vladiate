@@ -136,6 +136,27 @@ class RegexValidator(Validator):
         return self.failures
 
 
+class RangeValidator(Validator):
+    def __init__(self, low, high):
+        self.fail_count = 0
+        self.low = low
+        self.high = high
+        self.outside = set()
+
+    def validate(self, field, row={}):
+        if not self.low <= float(field) <= self.high:
+            self.outside.add(field)
+            raise ValidationException(
+                "'{}' is not in range {} to {}".format(
+                    field, self.low, self.high
+                )
+            )
+
+    @property
+    def bad(self):
+        return self.outside
+
+
 class EmptyValidator(Validator):
     ''' Validates that a field is always empty '''
 
@@ -147,11 +168,29 @@ class EmptyValidator(Validator):
         if field != '':
             self.nonempty.add(field)
             raise ValidationException(
-                "'{}' is not an empty string".format(field))
+                "'{}' is not an empty string".format(field)
+            )
 
     @property
     def bad(self):
         return self.nonempty
+
+
+class NotEmptyValidator(Validator):
+    ''' Validates that a field is not empty '''
+
+    def __init__(self):
+        self.fail_count = 0
+
+    def validate(self, field, row={}):
+        if field == '':
+            raise ValidationException("Row has emtpy field in column")
+
+    @property
+    def bad(self):
+        # Return an empty set to conform to the protocol. The 'bad' fields
+        # would all be empty strings anyways
+        return set()
 
 
 class Ignore(Validator):

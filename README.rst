@@ -244,11 +244,25 @@ Vladiate comes with a few common validators built-in:
   :``pattern=r'di^'``:
       The regex pattern. Fails for all fields by default.
 
+*class* ``RangeValidator``
+
+  Validates whether a field falls within a given range (inclusive). Can handle
+  integers or floats.
+
+  :``low``:
+      The low value of the range.
+  :``high``:
+      The high value of the range.
+
 *class* ``EmptyValidator``
 
   Ensure that a field is always empty. Essentially the same as an empty
   ``SetValidator``. This is used by default when a field has no
   validators.
+
+*class* ``NotEmptyValidator``
+
+  The opposite of an ``EmptyValidator``. Ensure that a field is never empty.
 
 *class* ``Ignore``
 

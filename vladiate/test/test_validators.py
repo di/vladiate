@@ -3,7 +3,8 @@ from pretend import stub, call, call_recorder
 
 from ..validators import (
     CastValidator, EmptyValidator, FloatValidator, Ignore, IntValidator,
-    RegexValidator, SetValidator, UniqueValidator, Validator
+    NotEmptyValidator, RangeValidator, RegexValidator, SetValidator,
+    UniqueValidator, Validator
 )
 from ..exceptions import BadValidatorException, ValidationException
 
@@ -154,6 +155,18 @@ def test_regex_validator_fails(pattern, field):
     assert validator.bad == {field}
 
 
+def test_range_validator_works():
+    RangeValidator(0, 100).validate("42")
+
+
+def test_range_validator_fails():
+    validator = RangeValidator(0, 100)
+    with pytest.raises(ValidationException):
+        validator.validate("-42")
+
+    assert validator.bad == {'-42'}
+
+
 def test_empty_validator_works():
     EmptyValidator().validate("")
 
@@ -164,6 +177,18 @@ def test_empty_validator_fails():
         validator.validate("foo")
 
     assert validator.bad == {'foo'}
+
+
+def test_non_empty_validator_works():
+    NotEmptyValidator().validate("foo")
+
+
+def test_non_empty_validator_fails():
+    validator = NotEmptyValidator()
+    with pytest.raises(ValidationException):
+        validator.validate("")
+
+    assert validator.bad == set()
 
 
 def test_ignore_validator():
