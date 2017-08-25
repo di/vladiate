@@ -144,7 +144,11 @@ class RangeValidator(Validator):
         self.outside = set()
 
     def validate(self, field, row={}):
-        if not self.low <= float(field) <= self.high:
+        try:
+            value = float(field)
+            if not self.low <= value <= self.high:
+                raise ValueError
+        except ValueError:
             self.outside.add(field)
             raise ValidationException(
                 "'{}' is not in range {} to {}".format(
