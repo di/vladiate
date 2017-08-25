@@ -167,6 +167,14 @@ def test_range_validator_fails():
     assert validator.bad == {'-42'}
 
 
+def test_range_validator_handles_bad_values():
+    validator = RangeValidator(0, 100)
+    with pytest.raises(ValidationException):
+        validator.validate("foobar")
+
+    assert validator.bad == {'foobar'}
+
+
 def test_empty_validator_works():
     EmptyValidator().validate("")
 
