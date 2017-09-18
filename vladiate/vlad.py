@@ -41,14 +41,24 @@ class Vlad(object):
                         "  {} failed {} time(s) ({:.1%}) on field: '{}'".format(
                             validator.__class__.__name__, validator.fail_count,
                             validator.fail_count / self.line_count, field_name))
-                    invalid = list(validator.bad)
-                    shown = ["'{}'".format(field) for field in invalid[:99]]
-                    hidden = ["'{}'".format(field) for field in invalid[99:]]
-                    self.logger.error(
-                        "    Invalid fields: [{}]".format(", ".join(shown)))
-                    if hidden:
+                    try:
+                        # If self.bad is iterable, it contains the fields which
+                        # caused it to fail
+                        invalid = list(validator.bad)
+                        shown = [
+                            "'{}'".format(field) for field in invalid[:99]
+                        ]
+                        hidden = [
+                            "'{}'".format(field)
+                            for field in invalid[99:]
+                        ]
                         self.logger.error(
-                            "    ({} more suppressed)".format(len(hidden)))
+                            "    Invalid fields: [{}]".format(", ".join(shown)))
+                        if hidden:
+                            self.logger.error(
+                                "    ({} more suppressed)".format(len(hidden)))
+                    except TypeError:
+                        pass
 
     def _log_missing_validators(self):
         self.logger.error("  Missing validators for:")
