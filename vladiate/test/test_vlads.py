@@ -3,7 +3,8 @@ import pytest
 from ..vlad import Vlad
 from ..inputs import LocalFile, String
 from ..validators import (
-    EmptyValidator, FloatValidator, SetValidator, UniqueValidator
+    EmptyValidator, FloatValidator, NotEmptyValidator, SetValidator,
+    UniqueValidator,
 )
 
 
@@ -144,3 +145,21 @@ def test_ignore_missing_validators():
 
     assert vlad.validate()
     assert vlad.missing_validators == {'Column B'}
+
+
+def test_when_bad_is_non_iterable():
+    source = String('Column A,Column B\n,foo')
+
+    class TestVlad(Vlad):
+        validators = {
+            'Column A': [NotEmptyValidator()],
+            'Column B': [NotEmptyValidator()],
+        }
+
+    vlad = TestVlad(source=source)
+
+    assert not vlad.validate()
+    assert vlad.validators['Column A'][0].fail_count == 1
+    assert vlad.validators['Column A'][0].bad
+    assert vlad.validators['Column B'][0].fail_count == 0
+    assert not vlad.validators['Column B'][0].bad

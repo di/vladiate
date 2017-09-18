@@ -196,7 +196,7 @@ def test_non_empty_validator_fails():
     with pytest.raises(ValidationException):
         validator.validate("")
 
-    assert validator.bad == set()
+    assert validator.bad is True
 
 
 def test_ignore_validator():
