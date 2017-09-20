@@ -81,12 +81,6 @@ def test_set_validator_works(field_set, field):
     assert field in validator.valid_set
 
 
-def test_set_validator_empty_ok():
-    validator = SetValidator(['foo'], empty_ok=True)
-    validator.validate('')
-    assert '' in validator.valid_set
-
-
 @pytest.mark.parametrize('field_set, field', [
     ([], 'bar'),
     (['foo'], 'bar'),
@@ -137,10 +131,6 @@ def test_unique_validator_fails(fields, row, unique_with, exception, bad):
 ])
 def test_regex_validator_works(pattern, field):
     RegexValidator(pattern).validate(field)
-
-
-def test_regex_validator_allows_empty():
-    RegexValidator(r'foo.*', empty_ok=True).validate('')
 
 
 @pytest.mark.parametrize('pattern, field', [
@@ -213,3 +203,16 @@ def test_base_class_raises():
 
     with pytest.raises(NotImplementedError):
         validator.validate(stub(), stub())
+
+
+@pytest.mark.parametrize('validator_class,args', [
+    (SetValidator, [['foo']]),
+    (RegexValidator, [r'foo.*']),
+    (IntValidator, []),
+    (FloatValidator, []),
+    (RangeValidator, [0, 42]),
+    (UniqueValidator, []),
+])
+def test_all_validators_support_empty_ok(validator_class, args):
+    validator = validator_class(*args, empty_ok=True)
+    validator.validate('')
