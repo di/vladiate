@@ -236,6 +236,8 @@ Vladiate comes with a few common validators built-in:
 
   :``unique_with=[]``:
       List of field names to make the primary field unique with.
+  :``empty_ok=False``:
+      Specify whether a field which is an empty string should be ignored.
 
 *class* ``RegexValidator``
 
@@ -243,6 +245,8 @@ Vladiate comes with a few common validators built-in:
 
   :``pattern=r'di^'``:
       The regex pattern. Fails for all fields by default.
+  :``empty_ok=False``:
+      Specify whether a field which is an empty string should be ignored.
 
 *class* ``RangeValidator``
 
@@ -253,6 +257,8 @@ Vladiate comes with a few common validators built-in:
       The low value of the range.
   :``high``:
       The high value of the range.
+  :``empty_ok=False``:
+      Specify whether a field which is an empty string should be ignored.
 
 *class* ``EmptyValidator``
 
