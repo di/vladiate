@@ -6,8 +6,9 @@ from vladiate.exceptions import ValidationException, BadValidatorException
 class Validator(object):
     ''' Generic Validator class '''
 
-    def __init__(self):
+    def __init__(self, empty_ok=False):
         self.fail_count = 0
+        self.empty_ok = empty_ok
 
     @property
     def bad(self):
@@ -22,8 +23,8 @@ class Validator(object):
 class CastValidator(Validator):
     ''' Validates that a field can be cast to a float '''
 
-    def __init__(self):
-        super(CastValidator, self).__init__()
+    def __init__(self, **kwargs):
+        super(CastValidator, self).__init__(**kwargs)
         self.invalid_set = set([])
 
     def validate(self, field, row={}):
@@ -42,29 +43,27 @@ class CastValidator(Validator):
 class FloatValidator(CastValidator):
     ''' Validates that a field can be cast to a float '''
 
-    def __init__(self, empty_ok=False):
-        super(FloatValidator, self).__init__()
-        self.empty_ok = empty_ok
+    def __init__(self, **kwargs):
+        super(FloatValidator, self).__init__(**kwargs)
         self.cast = float
 
 
 class IntValidator(CastValidator):
     ''' Validates that a field can be cast to an int '''
 
-    def __init__(self, empty_ok=False):
-        super(IntValidator, self).__init__()
-        self.empty_ok = empty_ok
+    def __init__(self, **kwargs):
+        super(IntValidator, self).__init__(**kwargs)
         self.cast = int
 
 
 class SetValidator(Validator):
     ''' Validates that a field is in the given set '''
 
-    def __init__(self, valid_set=[], empty_ok=False):
-        super(SetValidator, self).__init__()
+    def __init__(self, valid_set=[], **kwargs):
+        super(SetValidator, self).__init__(**kwargs)
         self.valid_set = set(valid_set)
         self.invalid_set = set([])
-        if empty_ok:
+        if self.empty_ok:
             self.valid_set.add('')
 
     def validate(self, field, row={}):
@@ -81,8 +80,8 @@ class SetValidator(Validator):
 class UniqueValidator(Validator):
     ''' Validates that a field is unique within the file '''
 
-    def __init__(self, unique_with=[]):
-        super(UniqueValidator, self).__init__()
+    def __init__(self, unique_with=[], **kwargs):
+        super(UniqueValidator, self).__init__(**kwargs)
         self.unique_values = set([])
         self.duplicates = set([])
         self.unique_with = unique_with
@@ -119,10 +118,9 @@ class UniqueValidator(Validator):
 class RegexValidator(Validator):
     ''' Validates that a field matches a given regex '''
 
-    def __init__(self, pattern=r'di^', empty_ok=False):
-        super(RegexValidator, self).__init__()
+    def __init__(self, pattern=r'di^', **kwargs):
+        super(RegexValidator, self).__init__(**kwargs)
         self.regex = re.compile(pattern)
-        self.empty_ok = empty_ok
         self.failures = set([])
 
     def validate(self, field, row={}):
@@ -137,13 +135,16 @@ class RegexValidator(Validator):
 
 
 class RangeValidator(Validator):
-    def __init__(self, low, high):
+    def __init__(self, low, high, **kwargs):
+        super(RangeValidator, self).__init__(**kwargs)
         self.fail_count = 0
         self.low = low
         self.high = high
         self.outside = set()
 
     def validate(self, field, row={}):
+        if field == '' and self.empty_ok:
+            return
         try:
             value = float(field)
             if not self.low <= value <= self.high:
@@ -164,8 +165,8 @@ class RangeValidator(Validator):
 class EmptyValidator(Validator):
     ''' Validates that a field is always empty '''
 
-    def __init__(self):
-        super(EmptyValidator, self).__init__()
+    def __init__(self, **kwargs):
+        super(EmptyValidator, self).__init__(**kwargs)
         self.nonempty = set([])
 
     def validate(self, field, row={}):
@@ -183,7 +184,8 @@ class EmptyValidator(Validator):
 class NotEmptyValidator(Validator):
     ''' Validates that a field is not empty '''
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super(NotEmptyValidator, self).__init__(**kwargs)
         self.fail_count = 0
         self.failed = False
 
