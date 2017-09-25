@@ -9,7 +9,8 @@ from vladiate import logs
 class Vlad(object):
 
     def __init__(self, source, validators={}, default_validator=EmptyValidator,
-                 delimiter=None, ignore_missing_validators=False):
+                 delimiter=None, ignore_missing_validators=False,
+                 ignore_field_order=True):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
@@ -19,6 +20,7 @@ class Vlad(object):
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
+        self.ignore_field_order = ignore_field_order
 
         self.validators.update({
             field: [default_validator()]
@@ -98,6 +100,12 @@ class Vlad(object):
             self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
             return False
+
+        if not self.ignore_field_order:
+            if not reader.fieldnames == self.validators:
+                self.logger.info("Source file field names do not exactly "
+                                 "match supplied validator fields. Order matters.")
+                return False
 
         for line, row in enumerate(reader):
             self.line_count += 1

@@ -336,6 +336,11 @@ Running Vlads Programatically
       Whether to fail validation if there are fields in the file for which the
       `Vlad` does not have validators. Optional, defaults to `False`.
 
+  :``ignore_field_order=True``:
+      Whether to fail validation if the field header in the file does not
+      exactly match the names and order of the `Vlad` validators.
+      Optional, defaults to `True`.
+
   For example:
 
 .. code:: python

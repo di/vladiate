@@ -163,3 +163,21 @@ def test_when_bad_is_non_iterable():
     assert vlad.validators['Column A'][0].bad
     assert vlad.validators['Column B'][0].fail_count == 0
     assert not vlad.validators['Column B'][0].bad
+
+
+def test_ignore_field_order():
+    source = LocalFile('vladiate/examples/vampires.csv')
+
+    class TestVlad(Vlad):
+        validators = {
+            'Column B': [
+                SetValidator(['Vampire', 'Not A Vampire'])
+            ],
+            'Column A': [
+                UniqueValidator()
+            ]
+        }
+
+    vlad = TestVlad(source=source, ignore_field_order=False)
+
+    assert not vlad.validate()
