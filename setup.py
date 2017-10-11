@@ -60,7 +60,8 @@ setup(
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
-    install_requires=['boto'],
+    install_requires=[],
+    extras_require={'s3': ['boto']},
     tests_require=['pretend', 'pytest', 'flake8'],
     cmdclass={'test': PyTest},
     entry_points={

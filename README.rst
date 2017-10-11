@@ -293,8 +293,11 @@ Vladiate comes with the following input types:
 
 *class* ``S3File``
 
-  Read from a file in S3. Uses the `boto <https://github.com/boto/boto>`_
-  library. Optionally can specify either a full path, or a bucket/key pair.
+  Read from a file in S3. Optionally can specify either a full path, or a
+  bucket/key pair.
+
+  Requires the `boto <https://github.com/boto/boto>`_ library, which should be
+  installed via ``pip install vladiate[s3]``.
 
   :``path=None``:
       A full S3 filepath (e.g., ``s3://foo.bar/path/to/file.csv``)
