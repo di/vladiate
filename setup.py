@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-__version__ = '0.0.18'
+__version__ = '0.0.19'
 
 
 class PyTest(TestCommand):
@@ -60,7 +60,8 @@ setup(
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
-    install_requires=['boto'],
+    install_requires=[],
+    extras_require={'s3': ['boto']},
     tests_require=['pretend', 'pytest', 'flake8'],
     cmdclass={'test': PyTest},
     entry_points={

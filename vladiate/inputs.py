@@ -1,5 +1,4 @@
 import io
-import boto
 try:
     from urlparse import urlparse
 except:
@@ -8,6 +7,8 @@ try:
     from StringIO import StringIO
 except:
     from io import StringIO
+
+from vladiate.exceptions import MissingExtraException
 
 
 class VladInput(object):
@@ -41,6 +42,15 @@ class S3File(VladInput):
     ''' Read from a file in S3 '''
 
     def __init__(self, path=None, bucket=None, key=None):
+        try:
+            import boto  # noqa
+            self.boto = boto
+        except:
+            # 2.7 workaround, should just be `raise Exception() from None`
+            exc = MissingExtraException()
+            exc.__context__ = None
+            raise exc
+
         if path and not any((bucket, key)):
             self.path = path
             parse_result = urlparse(path)
@@ -57,7 +67,7 @@ class S3File(VladInput):
             )
 
     def open(self):
-        s3 = boto.connect_s3()
+        s3 = self.boto.connect_s3()
         bucket = s3.get_bucket(self.bucket)
         key = bucket.new_key(self.key)
         contents = key.get_contents_as_string()
