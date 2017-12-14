@@ -163,7 +163,7 @@ def main():
 
     if arguments.show_version:
         print("Vladiate %s" % (get_distribution('vladiate').version, ))
-        return os.EX_OK
+        return exits.OK
 
     vladfile = find_vladfile(arguments.vladfile)
     if not vladfile:
