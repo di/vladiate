@@ -1,6 +1,7 @@
 import os
 import sys
 import inspect
+from vladiate import exits
 
 import pytest
 from pretend import stub, call, call_recorder
@@ -136,12 +137,12 @@ def test_main_when_get_nowait_raises(monkeypatch):
     monkeypatch.setattr('vladiate.main.result_queue', result_queue)
     monkeypatch.setattr('vladiate.main.Empty', MockEmpty)
 
-    assert main() is os.EX_OK
+    assert main() is exits.OK
 
 
 @pytest.mark.parametrize('get_nowait, expected', [
-    (lambda: stub(), os.EX_OK),
-    (lambda: False, os.EX_DATAERR),
+    (lambda: stub(), exits.OK),
+    (lambda: False, exits.DATAERR),
 ])
 def test_main_with_multiprocess(monkeypatch, get_nowait, expected):
     monkeypatch.setattr(
@@ -236,7 +237,7 @@ def test_main_missing_vlads(monkeypatch):
         'vladiate.main.load_vladfile',
         lambda *args, **kwargs: (None, {'Something Else': stub()})
     )
-    assert main() == os.EX_UNAVAILABLE
+    assert main() == exits.UNAVAILABLE
 
 
 def test_main_no_vlads_loaded(monkeypatch):
@@ -254,7 +255,7 @@ def test_main_no_vlads_loaded(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.load_vladfile', lambda *args, **kwargs: (None, vlads)
     )
-    assert main() == os.EX_NOINPUT
+    assert main() == exits.NOINPUT
 
 
 def test_main_list_commands(monkeypatch):
@@ -272,21 +273,21 @@ def test_main_list_commands(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.load_vladfile', lambda *args, **kwargs: (None, vlads)
     )
-    assert main() == os.EX_OK
+    assert main() == exits.OK
 
 
 def test_main_show_version(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.parse_args', lambda: stub(show_version=True)
     )
-    assert main() == os.EX_OK
+    assert main() == exits.OK
 
 
 def test_main_no_vladfile(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.find_vladfile', lambda *args, **kwargs: None
     )
-    assert main() == os.EX_NOINPUT
+    assert main() == exits.NOINPUT
 
 
 @pytest.mark.parametrize('path, expected', [
