@@ -1,6 +1,6 @@
 try:
     from Queue import Empty
-except:
+except ImportError:
     from queue import Empty
 from multiprocessing import Pool, Queue
 from vladiate import Vlad
