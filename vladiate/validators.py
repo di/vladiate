@@ -70,7 +70,8 @@ class SetValidator(Validator):
         if field not in self.valid_set:
             self.invalid_set.add(field)
             raise ValidationException(
-                "'{}' is not in {}".format(field, self.valid_set))
+                "'{}' is not in {}".format(field,
+                                           stringify_set(self.valid_set, 100)))
 
     @property
     def bad(self):
@@ -208,3 +209,14 @@ class Ignore(Validator):
     @property
     def bad(self):
         pass
+
+
+def stringify_set(a_set, max_len):
+    ''' Stringify `max_len` elements of `a_set` and count the remainings '''
+    # Don't convert `a_set` to a list for performance reasons
+    text = "[{}]".format(", ".join(
+        "'{}'".format(value) for _, value in zip(range(max_len), a_set)
+    ))
+    if len(a_set) > max_len:
+        text += " ({} more suppressed)".format(len(a_set) - max_len)
+    return text
