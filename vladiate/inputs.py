@@ -1,11 +1,11 @@
 import io
 try:
     from urlparse import urlparse
-except:
+except ImportError:
     from urllib.parse import urlparse
 try:
     from StringIO import StringIO
-except:
+except ImportError:
     from io import StringIO
 
 from vladiate.exceptions import MissingExtraException
@@ -45,7 +45,7 @@ class S3File(VladInput):
         try:
             import boto  # noqa
             self.boto = boto
-        except:
+        except ImportError:
             # 2.7 workaround, should just be `raise Exception() from None`
             exc = MissingExtraException()
             exc.__context__ = None

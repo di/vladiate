@@ -9,7 +9,7 @@ from ..vlad import Vlad
 def mock_boto(result):
     try:
         import builtins
-    except:
+    except ImportError:
         import __builtin__ as builtins
     realimport = builtins.__import__
 
