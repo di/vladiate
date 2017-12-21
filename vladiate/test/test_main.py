@@ -86,7 +86,7 @@ def test_run(monkeypatch):
     monkeypatch.setattr('vladiate.main.main', main)
     try:
         monkeypatch.setattr('__builtin__.exit', exit)
-    except AttributeError:
+    except ImportError:
         monkeypatch.setattr('builtins.exit', exit)
 
     run('__main__')
