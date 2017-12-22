@@ -85,6 +85,7 @@ def test_set_validator_works(field_set, field):
     ([], 'bar'),
     (['foo'], 'bar'),
     (['foo', 'bar'], 'baz'),
+    ([str(x) for x in range(200)], "notanumber"),
 ])
 def test_set_validator_fails(field_set, field):
     validator = SetValidator(field_set)
