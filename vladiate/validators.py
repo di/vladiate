@@ -215,7 +215,7 @@ class Ignore(Validator):
 def stringify_set(a_set, max_len):
     ''' Stringify `max_len` elements of `a_set` and count the remainings '''
     # Don't convert `a_set` to a list for performance reasons
-    text = "[{}]".format(", ".join(
+    text = "{{{}}}".format(", ".join(
         "'{}'".format(value) for value in islice(a_set, max_len)
     ))
     if len(a_set) > max_len:
