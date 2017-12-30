@@ -68,6 +68,14 @@ def parse_args():
         help="attempt to use this number of processes",
     )
 
+    # Verbose mode
+    parser.add_argument(
+        '-v', '--verbose',
+        dest='verbose',
+        action='store_true',
+        default=False,
+        help="Print failure exceptions from validators as debug logs")
+
     return parser.parse_args()
 
 
