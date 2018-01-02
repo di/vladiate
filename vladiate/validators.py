@@ -1,4 +1,5 @@
 import re
+from itertools import islice
 
 from vladiate.exceptions import ValidationException, BadValidatorException
 
@@ -70,7 +71,8 @@ class SetValidator(Validator):
         if field not in self.valid_set:
             self.invalid_set.add(field)
             raise ValidationException(
-                "'{}' is not in {}".format(field, self.valid_set))
+                "'{}' is not in {}".format(field,
+                                           _stringify_set(self.valid_set, 100)))
 
     @property
     def bad(self):
@@ -208,3 +210,21 @@ class Ignore(Validator):
     @property
     def bad(self):
         pass
+
+
+def _stringify_set(a_set, max_len, max_sort_size=8192):
+    ''' Stringify `max_len` elements of `a_set` and count the remainings
+
+    Small sets (len(a_set) <= max_sort_size) are displayed sorted.
+    Large sets won't be sorted for performance reasons.
+    This may result in an arbitrary ordering in the returned string.
+    '''
+    # Don't convert `a_set` to a list for performance reasons
+    text = "{{{}}}".format(", ".join(
+        "'{}'".format(value) for value in islice(
+            sorted(a_set) if len(a_set) <= max_sort_size else a_set,
+            max_len)
+    ))
+    if len(a_set) > max_len:
+        text += " ({} more suppressed)".format(len(a_set) - max_len)
+    return text

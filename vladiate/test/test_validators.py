@@ -4,7 +4,7 @@ from pretend import stub, call, call_recorder
 from ..validators import (
     CastValidator, EmptyValidator, FloatValidator, Ignore, IntValidator,
     NotEmptyValidator, RangeValidator, RegexValidator, SetValidator,
-    UniqueValidator, Validator
+    UniqueValidator, Validator, _stringify_set
 )
 from ..exceptions import BadValidatorException, ValidationException
 
@@ -216,3 +216,14 @@ def test_base_class_raises():
 def test_all_validators_support_empty_ok(validator_class, args):
     validator = validator_class(*args, empty_ok=True)
     validator.validate('')
+
+
+@pytest.mark.parametrize('a_set, max_len, stringified', [
+    ({'A', 'B', 'C'}, 4, "{'A', 'B', 'C'}"),
+    ({'A', 'B', 'C'}, 3, "{'A', 'B', 'C'}"),
+    ({'A', 'B', 'C'}, 2, "{'A', 'B'} (1 more suppressed)"),
+    ({'A', 'B', 'C'}, 0, "{} (3 more suppressed)"),
+    ({}, 5, "{}"),
+])
+def test_stringify_set(a_set, max_len, stringified):
+    assert _stringify_set(a_set, max_len) == stringified
