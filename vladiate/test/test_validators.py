@@ -224,14 +224,6 @@ def test_all_validators_support_empty_ok(validator_class, args):
     ({'A', 'B', 'C'}, 2, "{'A', 'B'} (1 more suppressed)"),
     ({'A', 'B', 'C'}, 0, "{} (3 more suppressed)"),
     ({}, 5, "{}"),
-    ({}, 0, "{}"),
 ])
 def test_stringify_set(a_set, max_len, stringified):
     assert _stringify_set(a_set, max_len) == stringified
-
-
-def test_stringify_set_invalid_params():
-    with pytest.raises(ValueError):
-        _stringify_set({}, -1, 10)
-    with pytest.raises(ValueError):
-        _stringify_set({}, 10, -1)

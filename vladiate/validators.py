@@ -219,11 +219,6 @@ def _stringify_set(a_set, max_len, max_sort_size=8192):
     Large sets won't be sorted for performance reasons.
     This may result in an arbitrary ordering in the returned string.
     '''
-    if max_len < 0:
-        raise ValueError("max_len must be non-negative: {}".format(max_len))
-    if max_sort_size < 0:
-        raise ValueError(
-            "max_sort_size must be non-negative: {}".format(max_sort_size))
     # Don't convert `a_set` to a list for performance reasons
     text = "{{{}}}".format(", ".join(
         "'{}'".format(value) for value in islice(
