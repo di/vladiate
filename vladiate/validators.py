@@ -212,11 +212,18 @@ class Ignore(Validator):
         pass
 
 
-def stringify_set(a_set, max_len):
-    ''' Stringify `max_len` elements of `a_set` and count the remainings '''
+def stringify_set(a_set, max_len, max_sort_size=8192):
+    ''' Stringify `max_len` elements of `a_set` and count the remainings
+
+    Small sets (len(a_set) <= max_sort_size) are displayed sorted.
+    Large sets won't be sorted for performance reasons.
+    This may result in an arbitrary ordering in the returned string.
+    '''
     # Don't convert `a_set` to a list for performance reasons
     text = "{{{}}}".format(", ".join(
-        "'{}'".format(value) for value in islice(a_set, max_len)
+        "'{}'".format(value) for value in islice(
+            sorted(a_set) if len(a_set) <= max_sort_size else a_set,
+            max_len)
     ))
     if len(a_set) > max_len:
         text += " ({} more suppressed)".format(len(a_set) - max_len)
