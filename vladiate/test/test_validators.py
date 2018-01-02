@@ -4,7 +4,7 @@ from pretend import stub, call, call_recorder
 from ..validators import (
     CastValidator, EmptyValidator, FloatValidator, Ignore, IntValidator,
     NotEmptyValidator, RangeValidator, RegexValidator, SetValidator,
-    UniqueValidator, Validator, stringify_set
+    UniqueValidator, Validator, _stringify_set
 )
 from ..exceptions import BadValidatorException, ValidationException
 
@@ -227,11 +227,11 @@ def test_all_validators_support_empty_ok(validator_class, args):
     ({}, 0, "{}"),
 ])
 def test_stringify_set(a_set, max_len, stringified):
-    assert stringify_set(a_set, max_len) == stringified
+    assert _stringify_set(a_set, max_len) == stringified
 
 
 def test_stringify_set_invalid_params():
     with pytest.raises(ValueError):
-        stringify_set({}, -1, 10)
+        _stringify_set({}, -1, 10)
     with pytest.raises(ValueError):
-        stringify_set({}, 10, -1)
+        _stringify_set({}, 10, -1)

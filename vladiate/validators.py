@@ -72,7 +72,7 @@ class SetValidator(Validator):
             self.invalid_set.add(field)
             raise ValidationException(
                 "'{}' is not in {}".format(field,
-                                           stringify_set(self.valid_set, 100)))
+                                           _stringify_set(self.valid_set, 100)))
 
     @property
     def bad(self):
@@ -212,7 +212,7 @@ class Ignore(Validator):
         pass
 
 
-def stringify_set(a_set, max_len, max_sort_size=8192):
+def _stringify_set(a_set, max_len, max_sort_size=8192):
     ''' Stringify `max_len` elements of `a_set` and count the remainings
 
     Small sets (len(a_set) <= max_sort_size) are displayed sorted.
