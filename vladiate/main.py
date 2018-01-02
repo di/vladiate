@@ -5,6 +5,7 @@ except ImportError:
 from multiprocessing import Pool, Queue
 from vladiate import Vlad
 from vladiate import logs
+from vladiate import exits
 
 import os
 import sys
@@ -162,7 +163,7 @@ def main():
 
     if arguments.show_version:
         print("Vladiate %s" % (get_distribution('vladiate').version, ))
-        return os.EX_OK
+        return exits.OK
 
     vladfile = find_vladfile(arguments.vladfile)
     if not vladfile:
@@ -170,7 +171,7 @@ def main():
             "Could not find any vladfile! Ensure file ends in '.py' and see "
             "--help for available options."
         )
-        return os.EX_NOINPUT
+        return exits.NOINPUT
 
     docstring, vlads = load_vladfile(vladfile)
 
@@ -178,18 +179,18 @@ def main():
         logger.info("Available vlads:")
         for name in vlads:
             logger.info("    " + name)
-        return os.EX_OK
+        return exits.OK
 
     if not vlads:
         logger.error("No vlad class found!")
-        return os.EX_NOINPUT
+        return exits.NOINPUT
 
     # make sure specified vlad exists
     if arguments.vlads:
         missing = set(arguments.vlads) - set(vlads.keys())
         if missing:
             logger.error("Unknown vlad(s): %s\n" % (", ".join(missing)))
-            return os.EX_UNAVAILABLE
+            return exits.UNAVAILABLE
         else:
             names = set(arguments.vlads) & set(vlads.keys())
             vlad_classes = [vlads[n] for n in names]
@@ -211,10 +212,10 @@ def main():
         proc_pool.map(_vladiate, vlad_classes)
         try:
             if not result_queue.get_nowait():
-                return os.EX_DATAERR
+                return exits.DATAERR
         except Empty:
             pass
-        return os.EX_OK
+        return exits.OK
 
 
 def run(name):
