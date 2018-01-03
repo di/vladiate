@@ -106,10 +106,11 @@ def test_verbose_and_fails_validation():
 
     vlad = TestVlad(source=source, verbose=True)
     assert not vlad.validate()
-    assert list(map(type, vlad.failures['Column A'][0])) == [ValidationException]
-    assert list(map(type, vlad.failures['Column A'][1])) == [ValidationException]
-    assert list(map(type, vlad.failures['Column A'][2])) == [ValidationException]
-    assert list(map(type, vlad.failures['Column B'][0])) == [ValidationException]
+    ve = [ValidationException]
+    assert list(map(type, vlad.failures['Column A'][0])) == ve
+    assert list(map(type, vlad.failures['Column A'][1])) == ve
+    assert list(map(type, vlad.failures['Column A'][2])) == ve
+    assert list(map(type, vlad.failures['Column B'][0])) == ve
     assert list(map(type, vlad.failures['Column B'][1])) == []
     assert list(map(type, vlad.failures['Column B'][2])) == []
 
