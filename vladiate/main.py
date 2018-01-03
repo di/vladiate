@@ -221,7 +221,7 @@ def main():
     all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            passed = vlad(source=vlad.source).validate()
+            passed = vlad(source=vlad.source, verbose=arguments.verbose).validate()
             all_passed = all_passed and passed
 
     else:
