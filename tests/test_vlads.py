@@ -9,6 +9,7 @@ from vladiate.validators import (
     UniqueValidator,
 )
 from vladiate.vlad import Vlad
+from vladiate.exceptions import ValidationException
 
 
 def test_initialize_vlad():
@@ -87,6 +88,30 @@ def test_fails_validation():
     assert not vlad.validate()
     assert vlad.validators["Column A"][0].fail_count == 3
     assert vlad.validators["Column B"][0].fail_count == 3
+    assert len(vlad.failures) == 0
+
+
+def test_verbose_and_fails_validation():
+    source = LocalFile('vladiate/examples/vampires.csv')
+
+    class TestVlad(Vlad):
+        validators = {
+            'Column A': [
+                EmptyValidator()
+            ],
+            'Column B': [
+                EmptyValidator()
+            ]
+        }
+
+    vlad = TestVlad(source=source, verbose=True)
+    assert not vlad.validate()
+    assert list(map(type, vlad.failures['Column A'][0])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column A'][1])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column A'][2])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column B'][0])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column B'][1])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column B'][2])) == [ValidationException]
 
 
 def test_gt_99_failures():
