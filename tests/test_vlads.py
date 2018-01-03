@@ -100,7 +100,7 @@ def test_verbose_and_fails_validation():
                 EmptyValidator()
             ],
             'Column B': [
-                EmptyValidator()
+                SetValidator(['Vampire'])
             ]
         }
 
@@ -110,8 +110,8 @@ def test_verbose_and_fails_validation():
     assert list(map(type, vlad.failures['Column A'][1])) == [ValidationException]
     assert list(map(type, vlad.failures['Column A'][2])) == [ValidationException]
     assert list(map(type, vlad.failures['Column B'][0])) == [ValidationException]
-    assert list(map(type, vlad.failures['Column B'][1])) == [ValidationException]
-    assert list(map(type, vlad.failures['Column B'][2])) == [ValidationException]
+    assert list(map(type, vlad.failures['Column B'][1])) == []
+    assert list(map(type, vlad.failures['Column B'][2])) == []
 
 
 def test_gt_99_failures():
