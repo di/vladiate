@@ -168,9 +168,12 @@ def load_vladfile(path):
     return imported.__doc__, vlads
 
 
-def _vladiate(vlad):
+def _vladiate(args):
+    vlad = args[0]
+    verbose = args[1]
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=vlad.validators).validate())
+    result_queue.put(vlad(vlad.source, validators=vlad.validators,
+                          verbose=verbose).validate())
 
 
 result_queue = Queue()
@@ -230,7 +233,8 @@ def main():
             if arguments.processes <= len(vlad_classes)
             else len(vlad_classes)
         )
-        proc_pool.map(_vladiate, vlad_classes)
+        proc_pool.map(_vladiate, zip(vlad_classes,
+                                     [arguments.verbose] * len(vlad_classes)))
         while not result_queue.empty():
             passed = result_queue.get()
             all_passed = all_passed and passed
