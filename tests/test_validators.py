@@ -1,12 +1,12 @@
 import pytest
 from pretend import stub, call, call_recorder
 
-from ..validators import (
+from vladiate.exceptions import BadValidatorException, ValidationException
+from vladiate.validators import (
     CastValidator, EmptyValidator, FloatValidator, Ignore, IntValidator,
     NotEmptyValidator, RangeValidator, RegexValidator, SetValidator,
     UniqueValidator, Validator, _stringify_set
 )
-from ..exceptions import BadValidatorException, ValidationException
 
 
 class FakeRow(object):

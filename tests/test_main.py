@@ -1,20 +1,19 @@
 import os
 import sys
 import inspect
-from vladiate import exits
 
 import pytest
 from pretend import stub, call, call_recorder
 
-from ..main import (  # NOQA
+from vladiate import exits
+from vladiate.examples import vladfile
+from vladiate.examples.vladfile import YourFirstFailingValidator
+from vladiate.inputs import String
+from vladiate.main import (
     parse_args, is_vlad, find_vladfile, load_vladfile, _vladiate, main, run,
     _is_package
 )
-
-from ..vlad import Vlad
-from ..inputs import String
-from ..examples import vladfile
-from ..examples.vladfile import YourFirstFailingValidator
+from vladiate.vlad import Vlad
 
 
 def test_parse_args():
@@ -260,7 +259,7 @@ def test_main_no_vladfile(monkeypatch):
 
 @pytest.mark.parametrize('path, expected', [
     ('foo/bar', False),
-    ('vladiate/test', True),
+    ('vladiate/examples', True),
 ])
 def test_is_package(path, expected):
     assert _is_package(path) == expected

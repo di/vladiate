@@ -1,11 +1,11 @@
 import pytest
 
-from ..vlad import Vlad
-from ..inputs import LocalFile, String
-from ..validators import (
+from vladiate.inputs import LocalFile, String
+from vladiate.validators import (
     EmptyValidator, FloatValidator, NotEmptyValidator, SetValidator,
     UniqueValidator,
 )
+from vladiate.vlad import Vlad
 
 
 def test_initialize_vlad():
