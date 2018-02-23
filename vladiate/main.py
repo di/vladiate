@@ -1,7 +1,3 @@
-try:
-    from Queue import Empty
-except ImportError:
-    from queue import Empty
 from multiprocessing import Pool, Queue
 from vladiate import Vlad
 from vladiate import logs
@@ -199,9 +195,11 @@ def main():
 
     # validate all the vlads, and collect the validations for a good exit
     # return code
+    all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            vlad(source=vlad.source).validate()
+            passed = vlad(source=vlad.source).validate()
+            all_passed = all_passed and passed
 
     else:
         proc_pool = Pool(
@@ -210,12 +208,11 @@ def main():
             else len(vlad_classes)
         )
         proc_pool.map(_vladiate, vlad_classes)
-        try:
-            if not result_queue.get_nowait():
-                return exits.DATAERR
-        except Empty:
-            pass
-        return exits.OK
+        while not result_queue.empty():
+            passed = result_queue.get()
+            all_passed = all_passed and passed
+
+    return exits.OK if all_passed else exits.DATAERR
 
 
 def run(name):
