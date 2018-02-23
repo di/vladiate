@@ -5,15 +5,15 @@ import inspect
 import pytest
 from pretend import stub, call, call_recorder
 
-from ..main import (  # NOQA
+from vladiate import exits
+from vladiate.examples import vladfile
+from vladiate.examples.vladfile import YourFirstFailingValidator
+from vladiate.inputs import String
+from vladiate.main import (
     parse_args, is_vlad, find_vladfile, load_vladfile, _vladiate, main, run,
     _is_package
 )
-
-from ..vlad import Vlad
-from ..inputs import String
-from ..examples import vladfile
-from ..examples.vladfile import YourFirstFailingValidator
+from vladiate.vlad import Vlad
 
 
 def test_parse_args():
@@ -100,50 +100,11 @@ def test_run(monkeypatch):
     ]
 
 
-def test_main_when_get_nowait_raises(monkeypatch):
-    monkeypatch.setattr(
-        'vladiate.main.parse_args', lambda: stub(
-            list_commands=False,
-            show_version=False,
-            vladfile=stub(),
-            vlads=['Something'],
-            processes=2,
-        )
-    )
-    monkeypatch.setattr(
-        'vladiate.main.find_vladfile', lambda *args, **kwargs: stub()
-    )
-    vlad = call_recorder(lambda *args, **kwargs: stub(validate=lambda: stub()))
-    vlad.source = stub()
-
-    monkeypatch.setattr(
-        'vladiate.main.load_vladfile',
-        lambda *args, **kwargs: (None, {'Something': vlad})
-    )
-
-    Pool = call_recorder(
-        lambda *args, **kwargs: stub(map=lambda *args, **kwargs: stub())
-    )
-    monkeypatch.setattr('vladiate.main.Pool', Pool)
-
-    class MockEmpty(BaseException):
-        pass
-
-    def _raise_empty():
-        raise MockEmpty
-
-    result_queue = stub(get_nowait=_raise_empty)
-    monkeypatch.setattr('vladiate.main.result_queue', result_queue)
-    monkeypatch.setattr('vladiate.main.Empty', MockEmpty)
-
-    assert main() is os.EX_OK
-
-
-@pytest.mark.parametrize('get_nowait, expected', [
-    (lambda: stub(), os.EX_OK),
-    (lambda: False, os.EX_DATAERR),
+@pytest.mark.parametrize('get, expected', [
+    (lambda: True, exits.OK),
+    (lambda: False, exits.DATAERR),
 ])
-def test_main_with_multiprocess(monkeypatch, get_nowait, expected):
+def test_main_with_multiprocess(monkeypatch, get, expected):
     monkeypatch.setattr(
         'vladiate.main.parse_args', lambda: stub(
             list_commands=False,
@@ -168,7 +129,14 @@ def test_main_with_multiprocess(monkeypatch, get_nowait, expected):
         lambda *args, **kwargs: stub(map=lambda *args, **kwargs: stub())
     )
     monkeypatch.setattr('vladiate.main.Pool', Pool)
-    result_queue = stub(get_nowait=get_nowait)
+
+    def empty(calls=[]):
+        if calls:
+            return True
+        calls.append(None)
+        return False
+
+    result_queue = stub(get=get, empty=empty)
     monkeypatch.setattr('vladiate.main.result_queue', result_queue)
 
     assert main() is expected
@@ -194,7 +162,7 @@ def test_main_with_vlads_in_args(monkeypatch):
         'vladiate.main.load_vladfile',
         lambda *args, **kwargs: (None, {'Something': vlad})
     )
-    assert main() is None
+    assert main() is exits.OK
 
 
 def test_main_no_vlads_in_args(monkeypatch):
@@ -217,7 +185,7 @@ def test_main_no_vlads_in_args(monkeypatch):
         'vladiate.main.load_vladfile',
         lambda *args, **kwargs: (None, {'Something Else': vlad})
     )
-    assert main() is None
+    assert main() == exits.OK
 
 
 def test_main_missing_vlads(monkeypatch):
@@ -236,7 +204,7 @@ def test_main_missing_vlads(monkeypatch):
         'vladiate.main.load_vladfile',
         lambda *args, **kwargs: (None, {'Something Else': stub()})
     )
-    assert main() == os.EX_UNAVAILABLE
+    assert main() == exits.UNAVAILABLE
 
 
 def test_main_no_vlads_loaded(monkeypatch):
@@ -254,7 +222,7 @@ def test_main_no_vlads_loaded(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.load_vladfile', lambda *args, **kwargs: (None, vlads)
     )
-    assert main() == os.EX_NOINPUT
+    assert main() == exits.NOINPUT
 
 
 def test_main_list_commands(monkeypatch):
@@ -272,26 +240,26 @@ def test_main_list_commands(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.load_vladfile', lambda *args, **kwargs: (None, vlads)
     )
-    assert main() == os.EX_OK
+    assert main() == exits.OK
 
 
 def test_main_show_version(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.parse_args', lambda: stub(show_version=True)
     )
-    assert main() == os.EX_OK
+    assert main() == exits.OK
 
 
 def test_main_no_vladfile(monkeypatch):
     monkeypatch.setattr(
         'vladiate.main.find_vladfile', lambda *args, **kwargs: None
     )
-    assert main() == os.EX_NOINPUT
+    assert main() == exits.NOINPUT
 
 
 @pytest.mark.parametrize('path, expected', [
     ('foo/bar', False),
-    ('vladiate/test', True),
+    ('vladiate/examples', True),
 ])
 def test_is_package(path, expected):
     assert _is_package(path) == expected

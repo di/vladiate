@@ -1,9 +1,9 @@
 import pytest
 from pretend import stub, call, call_recorder
 
-from ..exceptions import MissingExtraException
-from ..inputs import S3File, StringIO, String, VladInput
-from ..vlad import Vlad
+from vladiate.exceptions import MissingExtraException
+from vladiate.inputs import S3File, StringIO, String, VladInput
+from vladiate.vlad import Vlad
 
 
 def mock_boto(result):

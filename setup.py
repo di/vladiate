@@ -12,7 +12,7 @@ class PyTest(TestCommand):
 
     def initialize_options(self):
         TestCommand.initialize_options(self)
-        self.pytest_args = ['-x', 'vladiate/test']
+        self.pytest_args = ['-x', 'tests']
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
