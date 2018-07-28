@@ -8,13 +8,14 @@ from vladiate import logs
 
 class Vlad(object):
 
-    def __init__(self, source, validators={}, default_validator=EmptyValidator,
+    def __init__(self, source, fieldnames=[], validators={}, default_validator=EmptyValidator,
                  delimiter=None, ignore_missing_validators=False):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
+        self.fieldnames = fieldnames
         self.validators = validators or getattr(self, 'validators', {})
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
         self.line_count = 0
@@ -77,7 +78,11 @@ class Vlad(object):
     def validate(self):
         self.logger.info("\nValidating {}(source={})".format(
             self.__class__.__name__, self.source))
-        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+
+        if self.fieldnames:
+            reader = csv.DictReader(self.source.open(), self.fieldnames, delimiter=self.delimiter)
+        else:
+            reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
             self.logger.info(
@@ -100,6 +105,8 @@ class Vlad(object):
             return False
 
         for line, row in enumerate(reader):
+            if line == 0 and self.fieldnames:
+                continue
             self.line_count += 1
             for field_name, field in row.items():
                 if field_name in self.validators:
