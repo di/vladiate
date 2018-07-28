@@ -77,7 +77,7 @@ class Vlad(object):
                 for field in sorted(missing_items)])))
 
     def validate(self):
-        self.logger.info("\nValidating {}(source={})".format(
+        self.logger.info("Validating {}(source={})".format(
             self.__class__.__name__, self.source))
 
         if self.fieldnames:
@@ -86,7 +86,7 @@ class Vlad(object):
             reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
-            self.logger.info("Source file has no field names")
+            self.logger.info("Source file has no field names.")
             return False
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)
