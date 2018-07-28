@@ -41,7 +41,7 @@ class LocalFile(VladInput):
 class S3File(VladInput):
     ''' Read from a file in S3 '''
 
-    def __init__(self, path=None, bucket=None, key=None):
+    def __init__(self, path=None, bucket=None, key=None, aws_config={}):
         try:
             import boto  # noqa
             self.boto = boto
@@ -50,6 +50,8 @@ class S3File(VladInput):
             exc = MissingExtraException()
             exc.__context__ = None
             raise exc
+        #
+        self.aws_config = aws_config
 
         if path and not any((bucket, key)):
             self.path = path
@@ -67,7 +69,12 @@ class S3File(VladInput):
             )
 
     def open(self):
-        s3 = self.boto.connect_s3()
+        # aws_access_key_id, aws_secret_access_key
+        if self.aws_config:
+            s3 = self.boto.connect_s3(aws_access_key_id=self.aws_config['aws_access_key_id'], aws_secret_access_key=self.aws_config['aws_secret_access_key'])
+        else:
+            s3 = self.boto.connect_s3()
+
         bucket = s3.get_bucket(self.bucket)
         key = bucket.new_key(self.key)
         contents = key.get_contents_as_string()
