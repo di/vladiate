@@ -9,7 +9,7 @@ from vladiate import logs
 class Vlad(object):
 
     def __init__(self, source, fieldnames=[], validators={}, default_validator=EmptyValidator,
-                 delimiter=None, ignore_missing_validators=False):
+                 delimiter=None, ignore_missing_validators=False, console_log=False):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
@@ -20,6 +20,7 @@ class Vlad(object):
         self.delimiter = delimiter or getattr(self, 'delimiter', ',')
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
+        self.console_log = console_log
 
         self.validators.update({
             field: [default_validator()]
@@ -85,14 +86,13 @@ class Vlad(object):
             reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
-            self.logger.info(
-                "\033[1;33m" + "Source file has no field names" + "\033[0m"
-            )
+            self.logger.info("Source file has no field names")
             return False
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)
         if self.missing_validators:
-            self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
+            if self.console_log:
+                self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_validators()
 
             if not self.ignore_missing_validators:
@@ -100,7 +100,8 @@ class Vlad(object):
 
         self.missing_fields = set(self.validators) - set(reader.fieldnames)
         if self.missing_fields:
-            self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
+            if self.console_log:
+                self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
             return False
 
@@ -118,10 +119,12 @@ class Vlad(object):
                             validator.fail_count += 1
 
         if self.failures:
-            self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
+            if self.console_log:
+                self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()
             return False
         else:
-            self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
+            if self.console_log:
+                self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
             return True
