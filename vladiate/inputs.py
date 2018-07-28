@@ -1,4 +1,5 @@
 import io
+from gzip import GzipFile
 try:
     from urlparse import urlparse
 except ImportError:
@@ -31,8 +32,13 @@ class LocalFile(VladInput):
         self.filename = filename
 
     def open(self):
-        with open(self.filename, 'r') as f:
-            return f.readlines()
+        with open(self.filename, 'rb') as f:
+            if self.filename.endswith('.gz'):
+                fdata = f.read()
+                bstream = io.BytesIO(bytes(fdata))
+                return GzipFile(None, 'rb', fileobj=bstream)
+            else:
+                return f.readlines()
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.filename)
@@ -78,8 +84,13 @@ class S3File(VladInput):
         bucket = s3.get_bucket(self.bucket)
         key = bucket.new_key(self.key)
         contents = key.get_contents_as_string()
-        ret = io.BytesIO(bytes(contents))
-        return ret
+        bstream = io.BytesIO(bytes(contents))
+        # check gzip ext
+        if self.key.endswith('.gz'):
+            gstream = GzipFile(None, 'rb', fileobj=bstream)
+            return gstream
+        else:
+            return bstream
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.path)
