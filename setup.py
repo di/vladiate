@@ -60,7 +60,7 @@ setup(
     packages=find_packages(exclude=['examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
+    install_requires=['python-dateutil'],
     extras_require={'s3': ['boto']},
     tests_require=['pretend', 'pytest', 'flake8'],
     cmdclass={'test': PyTest},
