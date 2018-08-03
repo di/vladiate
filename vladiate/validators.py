@@ -3,6 +3,7 @@ from itertools import islice
 from dateutil.parser import parse
 from vladiate.exceptions import ValidationException, BadValidatorException
 
+
 class Validator(object):
     ''' Generic Validator class '''
 
@@ -210,6 +211,7 @@ class Ignore(Validator):
     def bad(self):
         pass
 
+
 class StringValidator(CastValidator):
     ''' Validates that a field can be cast to a string '''
 
@@ -217,12 +219,14 @@ class StringValidator(CastValidator):
         super(StringValidator, self).__init__(**kwargs)
         self.cast = str
 
+
 class BooleanValidator(CastValidator):
     ''' Validates that a field can be cast to a boolean '''
 
     def __init__(self, **kwargs):
         super(BooleanValidator, self).__init__(**kwargs)
         self.cast = bool
+
 
 class DateTimeValidator(Validator):
     ''' Validates that a field is date or datetime '''
@@ -236,7 +240,7 @@ class DateTimeValidator(Validator):
         if (field == '' or field.lower() == 'null') and self.empty_ok:
             return
         try:
-            value = parse(field)
+            parse(field)
         except ValueError:
             self.dtset.add(field)
             raise ValidationException("'{}' is not valid ".format(field))
@@ -244,6 +248,7 @@ class DateTimeValidator(Validator):
     @property
     def bad(self):
         return self.dtset
+
 
 def _stringify_set(a_set, max_len, max_sort_size=8192):
     ''' Stringify `max_len` elements of `a_set` and count the remainings

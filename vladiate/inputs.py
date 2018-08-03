@@ -77,7 +77,10 @@ class S3File(VladInput):
     def open(self):
         # aws_access_key_id, aws_secret_access_key
         if self.aws_config:
-            s3 = self.boto.connect_s3(aws_access_key_id=self.aws_config['aws_access_key_id'], aws_secret_access_key=self.aws_config['aws_secret_access_key'])
+            key = self.aws_config['aws_access_key_id']
+            secret = self.aws_config['aws_secret_access_key']
+            s3 = self.boto.connect_s3(
+                aws_access_key_id=key, aws_secret_access_key=secret)
         else:
             s3 = self.boto.connect_s3()
 

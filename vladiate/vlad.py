@@ -8,8 +8,9 @@ from vladiate import logs
 
 class Vlad(object):
 
-    def __init__(self, source, fieldnames=[], validators={}, default_validator=EmptyValidator,
-                 delimiter=None, ignore_missing_validators=False, console_log=False):
+    def __init__(self, source, fieldnames=[], validators={},
+                 default_validator=EmptyValidator, delimiter=None,
+                 ignore_missing_validators=False, console_log=False):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
@@ -81,9 +82,13 @@ class Vlad(object):
             self.__class__.__name__, self.source))
 
         if self.fieldnames:
-            reader = csv.DictReader(self.source.open(), self.fieldnames, delimiter=self.delimiter)
+            reader = csv.DictReader(
+                self.source.open(), self.fieldnames,
+                delimiter=self.delimiter)
         else:
-            reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+            reader = csv.DictReader(
+                self.source.open(),
+                delimiter=self.delimiter)
 
         if not reader.fieldnames:
             self.logger.info("Source file has no field names.")
