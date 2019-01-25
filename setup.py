@@ -61,7 +61,7 @@ setup(
     zip_safe=False,
     install_requires=[],
     extras_require={'s3': ['boto']},
-    tests_require=['pretend', 'pytest', 'flake8'],
+    tests_require=['pretend', 'pytest', 'black'],
     cmdclass={'test': PyTest},
     entry_points={
         'console_scripts': [

@@ -18,41 +18,55 @@ def parse_args():
 
     # Initialize
     parser = ArgumentParser(
-        description="vladiate [options] [VladClass [VladClass2 ... ]]")
+        description="vladiate [options] [VladClass [VladClass2 ... ]]"
+    )
 
-    parser.add_argument('vlads', metavar='vlads', type=str, nargs='*',
-                        help='A list of Vlad classes to validate')
+    parser.add_argument(
+        "vlads",
+        metavar="vlads",
+        type=str,
+        nargs="*",
+        help="A list of Vlad classes to validate",
+    )
 
     # Specify the vladfile to be something other than vladfile.py
     parser.add_argument(
-        '-f', '--vladfile',
-        dest='vladfile',
-        default='vladfile',
-        help="Python module to import, e.g. '../other.py'. Default: vladfile")
+        "-f",
+        "--vladfile",
+        dest="vladfile",
+        default="vladfile",
+        help="Python module to import, e.g. '../other.py'. Default: vladfile",
+    )
 
     # List vladiate commands found in loaded vladiate files/source files
     parser.add_argument(
-        '-l', '--list',
-        action='store_true',
-        dest='list_commands',
+        "-l",
+        "--list",
+        action="store_true",
+        dest="list_commands",
         default=False,
-        help="Show list of possible vladiate classes and exit")
+        help="Show list of possible vladiate classes and exit",
+    )
 
     # Version number
     parser.add_argument(
-        '-V', '--version',
-        action='store_true',
-        dest='show_version',
+        "-V",
+        "--version",
+        action="store_true",
+        dest="show_version",
         default=False,
-        help="show program's version number and exit")
+        help="show program's version number and exit",
+    )
 
     # Maximum number of processes to attempt to use
     parser.add_argument(
-        '-p', '--processes',
-        dest='processes',
+        "-p",
+        "--processes",
+        dest="processes",
         default=1,
         type=int,
-        help="attempt to use this number of processes")
+        help="attempt to use this number of processes",
+    )
 
     return parser.parse_args()
 
@@ -63,22 +77,23 @@ def is_vlad(tup):
     """
     name, item = tup
     return bool(
-        inspect.isclass(item) and issubclass(item, Vlad) and
-        hasattr(item, "source") and getattr(item, "source") and
-        hasattr(item, "validators") and not name.startswith('_'))
+        inspect.isclass(item)
+        and issubclass(item, Vlad)
+        and hasattr(item, "source")
+        and getattr(item, "source")
+        and hasattr(item, "validators")
+        and not name.startswith("_")
+    )
 
 
 def _is_package(path):
     """
     Is the given path a Python package?
     """
-    return (
-        os.path.isdir(path) and
-        os.path.exists(os.path.join(path, '__init__.py'))
-    )
+    return os.path.isdir(path) and os.path.exists(os.path.join(path, "__init__.py"))
 
 
-def find_vladfile(vladfile, path='.'):
+def find_vladfile(vladfile, path="."):
     """
     Attempt to locate a vladfile, either explicitly or by searching parent dirs.
     """
@@ -86,21 +101,21 @@ def find_vladfile(vladfile, path='.'):
     # Obtain env value
     names = [vladfile]
     # Create .py version if necessary
-    if not names[0].endswith('.py'):
-        names += [names[0] + '.py']
+    if not names[0].endswith(".py"):
+        names += [names[0] + ".py"]
     # Does the name contain path elements?
     if os.path.dirname(names[0]):
         # If so, expand home-directory markers and test for existence
         for name in names:
             expanded = os.path.expanduser(name)
             if os.path.exists(expanded):
-                if name.endswith('.py') or _is_package(expanded):
+                if name.endswith(".py") or _is_package(expanded):
                     return os.path.abspath(expanded)
     else:
         for name in names:
             joined = os.path.join(path, name)
             if os.path.exists(joined):
-                if name.endswith('.py') or _is_package(joined):
+                if name.endswith(".py") or _is_package(joined):
                     return os.path.abspath(joined)
     # Implicit 'return None' if nothing was found
 
@@ -158,7 +173,7 @@ def main():
     logger = logs.logger
 
     if arguments.show_version:
-        print("Vladiate %s" % (get_distribution('vladiate').version, ))
+        print("Vladiate %s" % (get_distribution("vladiate").version,))
         return exits.OK
 
     vladfile = find_vladfile(arguments.vladfile)
@@ -216,7 +231,7 @@ def main():
 
 
 def run(name):
-    if name == '__main__':
+    if name == "__main__":
         exit(main())
 
 
