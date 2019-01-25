@@ -194,7 +194,7 @@ class NotEmptyValidator(Validator):
     def validate(self, field, row={}):
         if field == '':
             self.failed = True
-            raise ValidationException("Row has emtpy field in column")
+            raise ValidationException("Row has tmpty field in column")
 
     @property
     def bad(self):
