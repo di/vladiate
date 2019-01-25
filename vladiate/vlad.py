@@ -7,27 +7,35 @@ from vladiate import logs
 
 
 class Vlad(object):
-
-    def __init__(self, source, validators={}, default_validator=EmptyValidator,
-                 delimiter=None, ignore_missing_validators=False):
+    def __init__(
+        self,
+        source,
+        validators={},
+        default_validator=EmptyValidator,
+        delimiter=None,
+        ignore_missing_validators=False,
+    ):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
-        self.validators = validators or getattr(self, 'validators', {})
-        self.delimiter = delimiter or getattr(self, 'delimiter', ',')
+        self.validators = validators or getattr(self, "validators", {})
+        self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
 
-        self.validators.update({
-            field: [default_validator()]
-            for field, value in self.validators.items() if not value
-        })
+        self.validators.update(
+            {
+                field: [default_validator()]
+                for field, value in self.validators.items()
+                if not value
+            }
+        )
 
     def _log_debug_failures(self):
         for field_name, field_failure in self.failures.items():
-            self.logger.debug("\nFailure on field: \"{}\":".format(field_name))
+            self.logger.debug('\nFailure on field: "{}":'.format(field_name))
             for i, (row, errors) in enumerate(field_failure.items()):
                 self.logger.debug("  {}:{}".format(self.source, row))
                 for error in errors:
@@ -39,24 +47,25 @@ class Vlad(object):
                 if validator.bad:
                     self.logger.error(
                         "  {} failed {} time(s) ({:.1%}) on field: '{}'".format(
-                            validator.__class__.__name__, validator.fail_count,
-                            validator.fail_count / self.line_count, field_name))
+                            validator.__class__.__name__,
+                            validator.fail_count,
+                            validator.fail_count / self.line_count,
+                            field_name,
+                        )
+                    )
                     try:
                         # If self.bad is iterable, it contains the fields which
                         # caused it to fail
                         invalid = list(validator.bad)
-                        shown = [
-                            "'{}'".format(field) for field in invalid[:99]
-                        ]
-                        hidden = [
-                            "'{}'".format(field)
-                            for field in invalid[99:]
-                        ]
+                        shown = ["'{}'".format(field) for field in invalid[:99]]
+                        hidden = ["'{}'".format(field) for field in invalid[99:]]
                         self.logger.error(
-                            "    Invalid fields: [{}]".format(", ".join(shown)))
+                            "    Invalid fields: [{}]".format(", ".join(shown))
+                        )
                         if hidden:
                             self.logger.error(
-                                "    ({} more suppressed)".format(len(hidden)))
+                                "    ({} more suppressed)".format(len(hidden))
+                            )
                     except TypeError:
                         pass
 
@@ -70,13 +79,17 @@ class Vlad(object):
 
     def _log_missing(self, missing_items):
         self.logger.error(
-            "{}".format("\n".join([
-                "    '{}': [],".format(field)
-                for field in sorted(missing_items)])))
+            "{}".format(
+                "\n".join(
+                    ["    '{}': [],".format(field) for field in sorted(missing_items)]
+                )
+            )
+        )
 
     def validate(self):
-        self.logger.info("\nValidating {}(source={})".format(
-            self.__class__.__name__, self.source))
+        self.logger.info(
+            "\nValidating {}(source={})".format(self.__class__.__name__, self.source)
+        )
         reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
