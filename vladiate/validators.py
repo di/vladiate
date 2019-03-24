@@ -211,7 +211,7 @@ class Ignore(Validator):
 
 
 class StringValidator(CastValidator):
-    ''' Validates that a field can be cast to a string '''
+    """ Validates that a field can be cast to a string """
 
     def __init__(self, **kwargs):
         super(StringValidator, self).__init__(**kwargs)
@@ -219,7 +219,7 @@ class StringValidator(CastValidator):
 
 
 class BooleanValidator(CastValidator):
-    ''' Validates that a field can be cast to a boolean '''
+    """ Validates that a field can be cast to a boolean """
 
     def __init__(self, **kwargs):
         super(BooleanValidator, self).__init__(**kwargs)
@@ -227,7 +227,7 @@ class BooleanValidator(CastValidator):
 
 
 class DateTimeValidator(Validator):
-    ''' Validates that a field is date or datetime '''
+    """ Validates that a field is date or datetime """
 
     def __init__(self, **kwargs):
         super(DateTimeValidator, self).__init__(**kwargs)
@@ -235,7 +235,7 @@ class DateTimeValidator(Validator):
         self.dtset = set()
 
     def validate(self, field, row={}):
-        if (field == '' or field.lower() == 'null') and self.empty_ok:
+        if (field == "" or field.lower() == "null") and self.empty_ok:
             return
         try:
             parse(field)

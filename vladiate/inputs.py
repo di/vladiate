@@ -34,13 +34,12 @@ class LocalFile(VladInput):
         self.filename = filename
 
     def open(self):
-        if self.filename.endswith('.gz'):
-            gzipfile = gzip.open(self.filename, 'rt')
+        if self.filename.endswith(".gz"):
+            gzipfile = gzip.open(self.filename, "rt")
             return gzipfile
         else:
-            with open(self.filename, 'r') as f:
+            with open(self.filename, "r") as f:
                 return f.readlines()
-
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.filename)
@@ -79,10 +78,11 @@ class S3File(VladInput):
     def open(self):
         # aws_access_key_id, aws_secret_access_key
         if self.aws_config:
-            key = self.aws_config['aws_access_key_id']
-            secret = self.aws_config['aws_secret_access_key']
+            key = self.aws_config["aws_access_key_id"]
+            secret = self.aws_config["aws_secret_access_key"]
             s3 = self.boto.connect_s3(
-                aws_access_key_id=key, aws_secret_access_key=secret)
+                aws_access_key_id=key, aws_secret_access_key=secret
+            )
         else:
             s3 = self.boto.connect_s3()
 
@@ -91,17 +91,17 @@ class S3File(VladInput):
         contents = key.get_contents_as_string()
         bstream = io.BytesIO(bytes(contents))
         # check gzip ext
-        if self.key.endswith('.gz'):
-            gstream = gzip.GzipFile(None, 'rb', fileobj=bstream)
+        if self.key.endswith(".gz"):
+            gstream = gzip.GzipFile(None, "rb", fileobj=bstream)
             if sys.version_info[0] == 2:
                 return gstream
             else:
-                return io.TextIOWrapper(gstream, encoding='utf8')
+                return io.TextIOWrapper(gstream, encoding="utf8")
         else:
             if sys.version_info[0] == 2:
                 return bstream
             else:
-                return io.TextIOWrapper(bstream, encoding='utf8')
+                return io.TextIOWrapper(bstream, encoding="utf8")
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.path)

@@ -79,7 +79,8 @@ def test_open_s3file():
 
     assert new_key.calls == [call("/some/s3/key.csv")]
 
-    assert result.readlines() == ['contents']
+    assert result.readlines() == ["contents"]
+
 
 def test_repr_s3file():
     s3_file = S3File("s3://some.bucket/some/s3/key.csv")
