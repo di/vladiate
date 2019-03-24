@@ -13,7 +13,6 @@
 5.  If your pull request passes the build, it will get a :+1: from an original
     author, and you will be given contributor-level access to the repo.
 
-6.  Squash your commits into a single commit (preferrably something like
-    "Fixes #13", which will reference the issue) and merge.
+6.  Merge your pull request! Your commits will be automatically squashed.
 
 7.  An original author will (eventually) release a new version.

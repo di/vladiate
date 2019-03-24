@@ -5,7 +5,7 @@ from vladiate.exceptions import ValidationException, BadValidatorException
 
 
 class Validator(object):
-    ''' Generic Validator class '''
+    """ Generic Validator class """
 
     def __init__(self, empty_ok=False):
         self.fail_count = 0
@@ -13,16 +13,16 @@ class Validator(object):
 
     @property
     def bad(self):
-        ''' Return something containing the "bad" fields '''
+        """ Return something containing the "bad" fields """
         raise NotImplementedError
 
     def validate(self, field, row):
-        ''' Validate the given field. Also is given the row context '''
+        """ Validate the given field. Also is given the row context """
         raise NotImplementedError
 
 
 class CastValidator(Validator):
-    ''' Validates that a field can be cast to a float '''
+    """ Validates that a field can be cast to a float """
 
     def __init__(self, **kwargs):
         super(CastValidator, self).__init__(**kwargs)
@@ -30,7 +30,7 @@ class CastValidator(Validator):
 
     def validate(self, field, row={}):
         try:
-            if (field or not self.empty_ok):
+            if field or not self.empty_ok:
                 self.cast(field)
         except ValueError as e:
             self.invalid_set.add(field)
@@ -42,7 +42,7 @@ class CastValidator(Validator):
 
 
 class FloatValidator(CastValidator):
-    ''' Validates that a field can be cast to a float '''
+    """ Validates that a field can be cast to a float """
 
     def __init__(self, **kwargs):
         super(FloatValidator, self).__init__(**kwargs)
@@ -50,7 +50,7 @@ class FloatValidator(CastValidator):
 
 
 class IntValidator(CastValidator):
-    ''' Validates that a field can be cast to an int '''
+    """ Validates that a field can be cast to an int """
 
     def __init__(self, **kwargs):
         super(IntValidator, self).__init__(**kwargs)
@@ -58,21 +58,21 @@ class IntValidator(CastValidator):
 
 
 class SetValidator(Validator):
-    ''' Validates that a field is in the given set '''
+    """ Validates that a field is in the given set """
 
     def __init__(self, valid_set=[], **kwargs):
         super(SetValidator, self).__init__(**kwargs)
         self.valid_set = set(valid_set)
         self.invalid_set = set([])
         if self.empty_ok:
-            self.valid_set.add('')
+            self.valid_set.add("")
 
     def validate(self, field, row={}):
         if field not in self.valid_set:
             self.invalid_set.add(field)
             raise ValidationException(
-                "'{}' is not in {}".format(field,
-                                           _stringify_set(self.valid_set, 100)))
+                "'{}' is not in {}".format(field, _stringify_set(self.valid_set, 100))
+            )
 
     @property
     def bad(self):
@@ -80,7 +80,7 @@ class SetValidator(Validator):
 
 
 class UniqueValidator(Validator):
-    ''' Validates that a field is unique within the file '''
+    """ Validates that a field is unique within the file """
 
     def __init__(self, unique_with=[], **kwargs):
         super(UniqueValidator, self).__init__(**kwargs)
@@ -107,10 +107,11 @@ class UniqueValidator(Validator):
             if self.unique_with:
                 raise ValidationException(
                     "'{}' is already in the column (unique with: {})".format(
-                        field, key[1:]))
+                        field, key[1:]
+                    )
+                )
             else:
-                raise ValidationException(
-                    "'{}' is already in the column".format(field))
+                raise ValidationException("'{}' is already in the column".format(field))
 
     @property
     def bad(self):
@@ -118,9 +119,9 @@ class UniqueValidator(Validator):
 
 
 class RegexValidator(Validator):
-    ''' Validates that a field matches a given regex '''
+    """ Validates that a field matches a given regex """
 
-    def __init__(self, pattern=r'di^', **kwargs):
+    def __init__(self, pattern=r"di^", **kwargs):
         super(RegexValidator, self).__init__(**kwargs)
         self.regex = re.compile(pattern)
         self.failures = set([])
@@ -129,7 +130,8 @@ class RegexValidator(Validator):
         if not self.regex.match(field) and (field or not self.empty_ok):
             self.failures.add(field)
             raise ValidationException(
-                "'{}' does not match pattern /{}/".format(field, self.regex))
+                "'{}' does not match pattern /{}/".format(field, self.regex)
+            )
 
     @property
     def bad(self):
@@ -145,7 +147,7 @@ class RangeValidator(Validator):
         self.outside = set()
 
     def validate(self, field, row={}):
-        if field == '' and self.empty_ok:
+        if field == "" and self.empty_ok:
             return
         try:
             value = float(field)
@@ -154,9 +156,7 @@ class RangeValidator(Validator):
         except ValueError:
             self.outside.add(field)
             raise ValidationException(
-                "'{}' is not in range {} to {}".format(
-                    field, self.low, self.high
-                )
+                "'{}' is not in range {} to {}".format(field, self.low, self.high)
             )
 
     @property
@@ -165,18 +165,16 @@ class RangeValidator(Validator):
 
 
 class EmptyValidator(Validator):
-    ''' Validates that a field is always empty '''
+    """ Validates that a field is always empty """
 
     def __init__(self, **kwargs):
         super(EmptyValidator, self).__init__(**kwargs)
         self.nonempty = set([])
 
     def validate(self, field, row={}):
-        if field != '':
+        if field != "":
             self.nonempty.add(field)
-            raise ValidationException(
-                "'{}' is not an empty string".format(field)
-            )
+            raise ValidationException("'{}' is not an empty string".format(field))
 
     @property
     def bad(self):
@@ -184,7 +182,7 @@ class EmptyValidator(Validator):
 
 
 class NotEmptyValidator(Validator):
-    ''' Validates that a field is not empty '''
+    """ Validates that a field is not empty """
 
     def __init__(self, **kwargs):
         super(NotEmptyValidator, self).__init__(**kwargs)
@@ -192,9 +190,9 @@ class NotEmptyValidator(Validator):
         self.failed = False
 
     def validate(self, field, row={}):
-        if field == '':
+        if field == "":
             self.failed = True
-            raise ValidationException("Row has emtpy field in column")
+            raise ValidationException("Row has empty field in column")
 
     @property
     def bad(self):
@@ -202,7 +200,7 @@ class NotEmptyValidator(Validator):
 
 
 class Ignore(Validator):
-    ''' Ignore a given field. Never fails '''
+    """ Ignore a given field. Never fails """
 
     def validate(self, field, row={}):
         pass
@@ -251,18 +249,21 @@ class DateTimeValidator(Validator):
 
 
 def _stringify_set(a_set, max_len, max_sort_size=8192):
-    ''' Stringify `max_len` elements of `a_set` and count the remainings
+    """ Stringify `max_len` elements of `a_set` and count the remainings
 
     Small sets (len(a_set) <= max_sort_size) are displayed sorted.
     Large sets won't be sorted for performance reasons.
     This may result in an arbitrary ordering in the returned string.
-    '''
+    """
     # Don't convert `a_set` to a list for performance reasons
-    text = "{{{}}}".format(", ".join(
-        "'{}'".format(value) for value in islice(
-            sorted(a_set) if len(a_set) <= max_sort_size else a_set,
-            max_len)
-    ))
+    text = "{{{}}}".format(
+        ", ".join(
+            "'{}'".format(value)
+            for value in islice(
+                sorted(a_set) if len(a_set) <= max_sort_size else a_set, max_len
+            )
+        )
+    )
     if len(a_set) > max_len:
         text += " ({} more suppressed)".format(len(a_set) - max_len)
     return text
