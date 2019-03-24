@@ -20,6 +20,43 @@ def test_initialize_vlad():
     }
     assert Vlad(source=source, validators=validators).validate()
 
+def test_initialize_vlad_with_gzip():
+    source = LocalFile('vladiate/examples/vampires.csv.gz')
+    validators = {
+        'Column A': [
+            UniqueValidator()
+        ],
+        'Column B': [
+            SetValidator(['Vampire', 'Not A Vampire'])
+        ]
+    }
+    assert Vlad(source=source, validators=validators).validate()
+
+def test_initialize_vlad_with_fieldnames():
+    fieldnames = ['Column A', 'Column B']
+    source = LocalFile('vladiate/examples/vampires.csv')
+    validators = {
+        'Column A': [
+            UniqueValidator()
+        ],
+        'Column B': [
+            SetValidator(['Vampire', 'Not A Vampire'])
+        ]
+    }
+    assert Vlad(source=source, fieldnames=fieldnames, validators=validators).validate()
+
+def test_initialize_vlad_with_override_fieldnames():
+    fieldnames = ['Column C', 'Column D']
+    source = LocalFile('vladiate/examples/vampires.csv')
+    validators = {
+        'Column C': [
+            UniqueValidator()
+        ],
+        'Column D': [
+            SetValidator(['Vampire', 'Not A Vampire'])
+        ]
+    }
+    assert Vlad(source=source, fieldnames=fieldnames, validators=validators).validate()
 
 def test_initialize_vlad_with_alternative_delimiter():
     source = LocalFile('vladiate/examples/bats.csv')

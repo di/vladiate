@@ -1,5 +1,6 @@
 import io
-from gzip import GzipFile
+import gzip
+import sys
 try:
     from urlparse import urlparse
 except ImportError:
@@ -32,12 +33,11 @@ class LocalFile(VladInput):
         self.filename = filename
 
     def open(self):
-        with open(self.filename, 'rb') as f:
-            if self.filename.endswith('.gz'):
-                fdata = f.read()
-                bstream = io.BytesIO(bytes(fdata))
-                return GzipFile(None, 'rb', fileobj=bstream)
-            else:
+        if self.filename.endswith('.gz'):
+            gzipfile = gzip.open(self.filename, 'rt')
+            return gzipfile
+        else:
+            with open(self.filename, 'r') as f:
                 return f.readlines()
 
     def __repr__(self):
@@ -90,10 +90,16 @@ class S3File(VladInput):
         bstream = io.BytesIO(bytes(contents))
         # check gzip ext
         if self.key.endswith('.gz'):
-            gstream = GzipFile(None, 'rb', fileobj=bstream)
-            return gstream
+            gstream = gzip.GzipFile(None, 'rb', fileobj=bstream)
+            if sys.version_info[0] == 2:
+                return gstream
+            else:
+                return io.TextIOWrapper(gstream, encoding='utf8')
         else:
-            return bstream
+            if sys.version_info[0] == 2:
+                return bstream
+            else:
+                return io.TextIOWrapper(bstream, encoding='utf8')
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.path)
