@@ -92,27 +92,23 @@ def test_fails_validation():
 
 
 def test_verbose_and_fails_validation():
-    source = LocalFile('vladiate/examples/vampires.csv')
+    source = LocalFile("vladiate/examples/vampires.csv")
 
     class TestVlad(Vlad):
         validators = {
-            'Column A': [
-                EmptyValidator()
-            ],
-            'Column B': [
-                SetValidator(['Vampire'])
-            ]
+            "Column A": [EmptyValidator()],
+            "Column B": [SetValidator(["Vampire"])],
         }
 
     vlad = TestVlad(source=source, verbose=True)
     assert not vlad.validate()
     ve = [ValidationException]
-    assert list(map(type, vlad.failures['Column A'][0])) == ve
-    assert list(map(type, vlad.failures['Column A'][1])) == ve
-    assert list(map(type, vlad.failures['Column A'][2])) == ve
-    assert list(map(type, vlad.failures['Column B'][0])) == ve
-    assert list(map(type, vlad.failures['Column B'][1])) == []
-    assert list(map(type, vlad.failures['Column B'][2])) == []
+    assert list(map(type, vlad.failures["Column A"][0])) == ve
+    assert list(map(type, vlad.failures["Column A"][1])) == ve
+    assert list(map(type, vlad.failures["Column A"][2])) == ve
+    assert list(map(type, vlad.failures["Column B"][0])) == ve
+    assert list(map(type, vlad.failures["Column B"][1])) == []
+    assert list(map(type, vlad.failures["Column B"][2])) == []
 
 
 def test_gt_99_failures():

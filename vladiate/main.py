@@ -70,11 +70,13 @@ def parse_args():
 
     # Verbose mode
     parser.add_argument(
-        '-v', '--verbose',
-        dest='verbose',
-        action='store_true',
+        "-v",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
         default=False,
-        help="Print failure exceptions from validators as debug logs")
+        help="Print failure exceptions from validators as debug logs",
+    )
 
     return parser.parse_args()
 
@@ -172,8 +174,9 @@ def _vladiate(args):
     vlad = args[0]
     verbose = args[1]
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=vlad.validators,
-                          verbose=verbose).validate())
+    result_queue.put(
+        vlad(vlad.source, validators=vlad.validators, verbose=verbose).validate()
+    )
 
 
 result_queue = Queue()
@@ -233,8 +236,9 @@ def main():
             if arguments.processes <= len(vlad_classes)
             else len(vlad_classes)
         )
-        proc_pool.map(_vladiate, zip(vlad_classes,
-                                     [arguments.verbose] * len(vlad_classes)))
+        proc_pool.map(
+            _vladiate, zip(vlad_classes, [arguments.verbose] * len(vlad_classes))
+        )
         while not result_queue.empty():
             passed = result_queue.get()
             all_passed = all_passed and passed
