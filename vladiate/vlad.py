@@ -15,7 +15,7 @@ class Vlad(object):
         default_validator=EmptyValidator,
         delimiter=None,
         ignore_missing_validators=False,
-        console_log=False,
+        quiet=False,
     ):
 
         self.logger = logs.logger
@@ -28,7 +28,7 @@ class Vlad(object):
         self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
-        self.console_log = console_log
+        self.quiet = quiet
 
         self.validators.update(
             {
@@ -109,7 +109,7 @@ class Vlad(object):
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)
         if self.missing_validators:
-            if self.console_log:
+            if self.quiet:
                 self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_validators()
 
@@ -118,7 +118,7 @@ class Vlad(object):
 
         self.missing_fields = set(self.validators) - set(reader.fieldnames)
         if self.missing_fields:
-            if self.console_log:
+            if self.quiet:
                 self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
             return False
@@ -137,12 +137,12 @@ class Vlad(object):
                             validator.fail_count += 1
 
         if self.failures:
-            if self.console_log:
+            if self.quiet:
                 self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()
             return False
         else:
-            if self.console_log:
+            if self.quiet:
                 self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
             return True

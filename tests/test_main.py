@@ -30,6 +30,7 @@ def test_parse_args():
     assert options.show_version is False
     assert options.vladfile == "vladfile"
     assert options.vlads == ["test"]
+    assert options.quiet is True
 
 
 @pytest.mark.parametrize(
@@ -85,7 +86,7 @@ def test_vladiate(monkeypatch):
         def validate(self):
             return validate_result
 
-    _vladiate(TestVlad)
+    _vladiate(([TestVlad],True))
 
     assert put.calls == [call(validate_result)]
 
@@ -119,6 +120,7 @@ def test_main_with_multiprocess(monkeypatch, get, expected):
             vladfile=stub(),
             vlads=["Something"],
             processes=2,
+            quiet=True,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -156,6 +158,7 @@ def test_main_with_vlads_in_args(monkeypatch):
             vladfile=stub(),
             vlads=["Something"],
             processes=1,
+            quiet=True,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -178,6 +181,7 @@ def test_main_no_vlads_in_args(monkeypatch):
             vladfile=stub(),
             vlads=[],
             processes=1,
+            quiet=True,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -199,6 +203,7 @@ def test_main_missing_vlads(monkeypatch):
             show_version=False,
             vladfile=stub(),
             vlads=["Something"],
+            quiet=True,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -212,7 +217,7 @@ def test_main_missing_vlads(monkeypatch):
 def test_main_no_vlads_loaded(monkeypatch):
     monkeypatch.setattr(
         "vladiate.main.parse_args",
-        lambda: stub(list_commands=False, show_version=False, vladfile=stub()),
+        lambda: stub(list_commands=False, show_version=False, vladfile=stub(), quiet=True),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
     vlads = []
@@ -225,7 +230,7 @@ def test_main_no_vlads_loaded(monkeypatch):
 def test_main_list_commands(monkeypatch):
     monkeypatch.setattr(
         "vladiate.main.parse_args",
-        lambda: stub(list_commands=True, show_version=False, vladfile=stub()),
+        lambda: stub(list_commands=True, show_version=False, vladfile=stub(), quiet=True),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
     vlads = ["Something"]
@@ -236,7 +241,7 @@ def test_main_list_commands(monkeypatch):
 
 
 def test_main_show_version(monkeypatch):
-    monkeypatch.setattr("vladiate.main.parse_args", lambda: stub(show_version=True))
+    monkeypatch.setattr("vladiate.main.parse_args", lambda: stub(show_version=True, quiet=True))
     assert main() == exits.OK
 
 
