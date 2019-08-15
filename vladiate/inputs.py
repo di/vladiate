@@ -39,7 +39,7 @@ class LocalFile(VladInput):
         self.kwargs = kwargs
 
     def open(self):
-        with open(file=self.filename, mode="r", **self.kwargs) as f:
+        with open(self.filename, mode="r", **self.kwargs) as f:
             return f.readlines()
 
     def __repr__(self):
