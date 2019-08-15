@@ -28,11 +28,18 @@ class VladInput(object):
 class LocalFile(VladInput):
     """ Read from a local file path """
 
-    def __init__(self, filename):
+    def __init__(self, filename, **kwargs):
+        """
+        Parameters:
+            * filename (string) location of file
+            * kwargs (dict) passed directly to `open()`
+        """
+        
         self.filename = filename
+        self.kwargs = kwargs
 
     def open(self):
-        with open(self.filename, "r") as f:
+        with open(file=self.filename, mode="r", **self.kwargs) as f:
             return f.readlines()
 
     def __repr__(self):
