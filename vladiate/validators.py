@@ -126,7 +126,7 @@ class RegexValidator(Validator):
         self.regex = re.compile(pattern)
         self.failures = set([])
         if full:
-            self.regex = re.compile(r'(?:' + pattern + r')\Z')
+            self.regex = re.compile(r"(?:" + pattern + r")\Z")
 
     def validate(self, field, row={}):
         if not self.regex.match(field) and (field or not self.empty_ok):

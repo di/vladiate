@@ -149,6 +149,7 @@ def test_unique_validator_fails(fields, row, unique_with, exception, bad):
 def test_regex_validator_works(pattern, field):
     RegexValidator(pattern).validate(field)
 
+
 @pytest.mark.parametrize("pattern, field", [(r"[^\s]+", "foo bar")])
 def test_regex_validator_full_works(pattern, field):
     validator = RegexValidator(pattern, full=True)
@@ -156,6 +157,7 @@ def test_regex_validator_full_works(pattern, field):
         validator.validate(field)
 
     assert validator.bad == {field}
+
 
 @pytest.mark.parametrize("pattern, field", [(r"foo.*", "afoo"), (r"^$", "foo")])
 def test_regex_validator_fails(pattern, field):
