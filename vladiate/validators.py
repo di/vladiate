@@ -121,17 +121,25 @@ class UniqueValidator(Validator):
 class RegexValidator(Validator):
     """ Validates that a field matches a given regex """
 
-    def __init__(self, pattern=r"di^", **kwargs):
+    def __init__(self, pattern=r"di^", full=False, **kwargs):
         super(RegexValidator, self).__init__(**kwargs)
         self.regex = re.compile(pattern)
+        self.full_regex = full
         self.failures = set([])
 
     def validate(self, field, row={}):
-        if not self.regex.match(field) and (field or not self.empty_ok):
-            self.failures.add(field)
-            raise ValidationException(
-                "'{}' does not match pattern /{}/".format(field, self.regex)
-            )
+        if not self.full_regex:
+            if not self.regex.match(field) and (field or not self.empty_ok):
+                self.failures.add(field)
+                raise ValidationException(
+                    "'{}' does not match pattern /{}/".format(field, self.regex)
+                )
+        else:
+            if not self.regex.fullmatch(field) and (field or not self.empty_ok):
+                self.failures.add(field)
+                raise ValidationException(
+                    "'{}' does not match pattern /{}/".format(field, self.regex)
+                )
 
     @property
     def bad(self):
