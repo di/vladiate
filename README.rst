@@ -245,6 +245,8 @@ Vladiate comes with a few common validators built-in:
 
   :``pattern=r'di^'``:
       The regex pattern. Fails for all fields by default.
+  :``full=False``:
+      Specify whether we should use a fullmatch() or match().
   :``empty_ok=False``:
       Specify whether a field which is an empty string should be ignored.
 
