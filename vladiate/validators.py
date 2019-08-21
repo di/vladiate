@@ -123,10 +123,11 @@ class RegexValidator(Validator):
 
     def __init__(self, pattern=r"di^", full=False, **kwargs):
         super(RegexValidator, self).__init__(**kwargs)
-        self.regex = re.compile(pattern)
         self.failures = set([])
         if full:
             self.regex = re.compile(r"(?:" + pattern + r")\Z")
+        else:
+            self.regex = re.compile(pattern)
 
     def validate(self, field, row={}):
         if not self.regex.match(field) and (field or not self.empty_ok):
