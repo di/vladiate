@@ -1,6 +1,6 @@
 import re
 from itertools import islice
-
+from dateutil.parser import parse
 from vladiate.exceptions import ValidationException, BadValidatorException
 
 
@@ -211,6 +211,44 @@ class Ignore(Validator):
     @property
     def bad(self):
         pass
+
+
+class StringValidator(CastValidator):
+    """ Validates that a field can be cast to a string """
+
+    def __init__(self, **kwargs):
+        super(StringValidator, self).__init__(**kwargs)
+        self.cast = str
+
+
+class BooleanValidator(CastValidator):
+    """ Validates that a field can be cast to a boolean """
+
+    def __init__(self, **kwargs):
+        super(BooleanValidator, self).__init__(**kwargs)
+        self.cast = bool
+
+
+class DateTimeValidator(Validator):
+    """ Validates that a field is date or datetime """
+
+    def __init__(self, **kwargs):
+        super(DateTimeValidator, self).__init__(**kwargs)
+        self.fail_count = 0
+        self.dtset = set()
+
+    def validate(self, field, row={}):
+        if (field == "" or field.lower() == "null") and self.empty_ok:
+            return
+        try:
+            parse(field)
+        except ValueError:
+            self.dtset.add(field)
+            raise ValidationException("'{}' is not valid ".format(field))
+
+    @property
+    def bad(self):
+        return self.dtset
 
 
 def _stringify_set(a_set, max_len, max_sort_size=8192):

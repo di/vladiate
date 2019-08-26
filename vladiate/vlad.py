@@ -10,20 +10,25 @@ class Vlad(object):
     def __init__(
         self,
         source,
+        fieldnames=[],
         validators={},
         default_validator=EmptyValidator,
         delimiter=None,
         ignore_missing_validators=False,
+        quiet=False,
     ):
+
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
+        self.fieldnames = fieldnames
         self.validators = validators or getattr(self, "validators", {})
         self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
+        self.quiet = quiet
 
         self.validators.update(
             {
@@ -88,19 +93,24 @@ class Vlad(object):
 
     def validate(self):
         self.logger.info(
-            "\nValidating {}(source={})".format(self.__class__.__name__, self.source)
+            "Validating {}(source={})".format(self.__class__.__name__, self.source)
         )
-        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+
+        if self.fieldnames:
+            reader = csv.DictReader(
+                self.source.open(), self.fieldnames, delimiter=self.delimiter
+            )
+        else:
+            reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
 
         if not reader.fieldnames:
-            self.logger.info(
-                "\033[1;33m" + "Source file has no field names" + "\033[0m"
-            )
+            self.logger.info("Source file has no field names.")
             return False
 
         self.missing_validators = set(reader.fieldnames) - set(self.validators)
         if self.missing_validators:
-            self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
+            if self.quiet:
+                self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_validators()
 
             if not self.ignore_missing_validators:
@@ -108,11 +118,14 @@ class Vlad(object):
 
         self.missing_fields = set(self.validators) - set(reader.fieldnames)
         if self.missing_fields:
-            self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
+            if self.quiet:
+                self.logger.info("\033[1;33m" + "Missing..." + "\033[0m")
             self._log_missing_fields()
             return False
 
         for line, row in enumerate(reader):
+            if line == 0 and self.fieldnames:
+                continue
             self.line_count += 1
             for field_name, field in row.items():
                 if field_name in self.validators:
@@ -124,10 +137,12 @@ class Vlad(object):
                             validator.fail_count += 1
 
         if self.failures:
-            self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
+            if self.quiet:
+                self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()
             return False
         else:
-            self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
+            if self.quiet:
+                self.logger.info("\033[0;32m" + "Passed! :)" + "\033[0m")
             return True

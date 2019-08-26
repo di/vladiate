@@ -1,4 +1,6 @@
 import io
+import gzip
+import sys
 
 try:
     from urlparse import urlparse
@@ -32,8 +34,12 @@ class LocalFile(VladInput):
         self.filename = filename
 
     def open(self):
-        with open(self.filename, "r") as f:
-            return f.readlines()
+        if self.filename.endswith(".gz"):
+            gzipfile = gzip.open(self.filename, "rt")
+            return gzipfile
+        else:
+            with open(self.filename, "r") as f:
+                return f.readlines()
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.filename)
@@ -42,7 +48,7 @@ class LocalFile(VladInput):
 class S3File(VladInput):
     """ Read from a file in S3 """
 
-    def __init__(self, path=None, bucket=None, key=None):
+    def __init__(self, path=None, bucket=None, key=None, aws_config={}):
         try:
             import boto  # noqa
 
@@ -52,6 +58,8 @@ class S3File(VladInput):
             exc = MissingExtraException()
             exc.__context__ = None
             raise exc
+
+        self.aws_config = aws_config
 
         if path and not any((bucket, key)):
             self.path = path
@@ -68,12 +76,30 @@ class S3File(VladInput):
             )
 
     def open(self):
-        s3 = self.boto.connect_s3()
+        if self.aws_config:
+            s3 = self.boto.connect_s3(
+                aws_access_key_id=self.aws_config["aws_access_key_id"],
+                aws_secret_access_key=self.aws_config["aws_secret_access_key"],
+            )
+        else:
+            s3 = self.boto.connect_s3()
+
         bucket = s3.get_bucket(self.bucket)
         key = bucket.new_key(self.key)
         contents = key.get_contents_as_string()
-        ret = io.BytesIO(bytes(contents))
-        return ret
+        bstream = io.BytesIO(bytes(contents))
+        # check gzip ext
+        if self.key.endswith(".gz"):
+            gstream = gzip.GzipFile(None, "rb", fileobj=bstream)
+            if sys.version_info[0] == 2:
+                return gstream
+            else:
+                return io.TextIOWrapper(gstream, encoding="utf8")
+        else:
+            if sys.version_info[0] == 2:
+                return bstream
+            else:
+                return io.TextIOWrapper(bstream, encoding="utf8")
 
     def __repr__(self):
         return "{}('{}')".format(self.__class__.__name__, self.path)

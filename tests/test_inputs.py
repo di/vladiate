@@ -8,9 +8,11 @@ from vladiate.vlad import Vlad
 
 def mock_boto(result):
     try:
-        import builtins
-    except ImportError:
+        # check python 2.7.14 otherwise it throws has no attribute '__import__'
+        # builtins in 2.7.14 via future does not have __import__
         import __builtin__ as builtins
+    except ImportError:
+        import builtins
     realimport = builtins.__import__
 
     def badimport(name, *args, **kwargs):
@@ -77,7 +79,7 @@ def test_open_s3file():
 
     assert new_key.calls == [call("/some/s3/key.csv")]
 
-    assert result.readlines() == [b"contents"]
+    assert result.readlines() == ["contents"]
 
 
 def test_repr_s3file():

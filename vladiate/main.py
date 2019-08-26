@@ -68,6 +68,11 @@ def parse_args():
         help="attempt to use this number of processes",
     )
 
+    # turn-off logging
+    parser.add_argument(
+        "-q", "--quiet", dest="quiet", action="store_false", help="turn-off logging"
+    )
+
     return parser.parse_args()
 
 
@@ -160,9 +165,13 @@ def load_vladfile(path):
     return imported.__doc__, vlads
 
 
-def _vladiate(vlad):
+def _vladiate(args):
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=vlad.validators).validate())
+    (vlad_list, quiet) = args
+    for vlad in vlad_list:
+        result_queue.put(
+            vlad(vlad.source, validators=vlad.validators, quiet=quiet).validate()
+        )
 
 
 result_queue = Queue()
@@ -171,6 +180,9 @@ result_queue = Queue()
 def main():
     arguments = parse_args()
     logger = logs.logger
+
+    # Turn-off logging
+    quiet = arguments.quiet
 
     if arguments.show_version:
         print("Vladiate %s" % (get_distribution("vladiate").version,))
@@ -213,7 +225,7 @@ def main():
     all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            passed = vlad(source=vlad.source).validate()
+            passed = vlad(source=vlad.source, quiet=quiet).validate()
             all_passed = all_passed and passed
 
     else:
@@ -222,7 +234,7 @@ def main():
             if arguments.processes <= len(vlad_classes)
             else len(vlad_classes)
         )
-        proc_pool.map(_vladiate, vlad_classes)
+        proc_pool.map(_vladiate, [(vlad_classes, quiet)])
         while not result_queue.empty():
             passed = result_queue.get()
             all_passed = all_passed and passed
