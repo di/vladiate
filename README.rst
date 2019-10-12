@@ -380,6 +380,7 @@ Command Line Arguments
       -V, --version         show version number and exit
       -p PROCESSES, --processes=PROCESSES
                             attempt to use this number of processes, Default: 1
+      -v, --verbose         Print failure exceptions from validators as debug logs
 
 Authors
 -------

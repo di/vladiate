@@ -68,6 +68,16 @@ def parse_args():
         help="attempt to use this number of processes",
     )
 
+    # Verbose mode
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        default=False,
+        help="Print failure exceptions from validators as debug logs",
+    )
+
     return parser.parse_args()
 
 
@@ -160,9 +170,13 @@ def load_vladfile(path):
     return imported.__doc__, vlads
 
 
-def _vladiate(vlad):
+def _vladiate(args):
+    vlad = args[0]
+    verbose = args[1]
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=vlad.validators).validate())
+    result_queue.put(
+        vlad(vlad.source, validators=vlad.validators, verbose=verbose).validate()
+    )
 
 
 result_queue = Queue()
@@ -213,7 +227,7 @@ def main():
     all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            passed = vlad(source=vlad.source).validate()
+            passed = vlad(source=vlad.source, verbose=arguments.verbose).validate()
             all_passed = all_passed and passed
 
     else:
@@ -222,7 +236,9 @@ def main():
             if arguments.processes <= len(vlad_classes)
             else len(vlad_classes)
         )
-        proc_pool.map(_vladiate, vlad_classes)
+        proc_pool.map(
+            _vladiate, zip(vlad_classes, [arguments.verbose] * len(vlad_classes))
+        )
         while not result_queue.empty():
             passed = result_queue.get()
             all_passed = all_passed and passed
