@@ -172,12 +172,16 @@ def load_vladfile(path):
 
 def _vladiate(vlad):
     global result_queue
-    result_queue.put(vlad(vlad.source, validators=vlad.validators,
-                            disable_console_log=arguments.quiet).validate())
+    result_queue.put(
+        vlad(
+            vlad.source, validators=vlad.validators, disable_console_log=arguments.quiet
+        ).validate()
+    )
 
 
 result_queue = Queue()
 arguments = parse_args()
+
 
 def main():
     global arguments
@@ -225,7 +229,9 @@ def main():
     all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            passed = vlad(source=vlad.source, disable_console_log=arguments.quiet).validate()
+            passed = vlad(
+                source=vlad.source, disable_console_log=arguments.quiet
+            ).validate()
             all_passed = all_passed and passed
 
     else:
