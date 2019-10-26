@@ -109,6 +109,19 @@ def test_ignore_missing_validators():
     assert vlad.validate()
     assert vlad.missing_validators == {"Column B"}
 
+def test_disable_console_log(caplog):
+    source = LocalFile("vladiate/examples/vampires.csv")
+
+    class TestVlad(Vlad):
+        validators = {
+            "Column A": [UniqueValidator()],
+            "Column B": [SetValidator(["Vampire", "Not A Vampire"])],
+        }
+
+    vlad = TestVlad(source=source, disable_console_log=True)
+
+    assert vlad.validate()
+    assert len(caplog.records) == 0
 
 def test_when_bad_is_non_iterable():
     source = String("Column A,Column B\n,foo")

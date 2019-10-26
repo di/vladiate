@@ -77,6 +77,7 @@ def test_vladiate(monkeypatch):
     validate_result = stub()
 
     monkeypatch.setattr("vladiate.main.result_queue", result_queue)
+    monkeypatch.setattr("vladiate.main.parse_args", stub())
 
     class TestVlad(Vlad):
         source = String("foo")
@@ -119,6 +120,7 @@ def test_main_with_multiprocess(monkeypatch, get, expected):
             vladfile=stub(),
             vlads=["Something"],
             processes=2,
+            quiet=False,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -156,6 +158,7 @@ def test_main_with_vlads_in_args(monkeypatch):
             vladfile=stub(),
             vlads=["Something"],
             processes=1,
+            quiet=False,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
@@ -178,6 +181,7 @@ def test_main_no_vlads_in_args(monkeypatch):
             vladfile=stub(),
             vlads=[],
             processes=1,
+            quiet=False,
         ),
     )
     monkeypatch.setattr("vladiate.main.find_vladfile", lambda *args, **kwargs: stub())
