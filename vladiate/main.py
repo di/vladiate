@@ -174,17 +174,15 @@ def _vladiate(vlad):
     global result_queue
     result_queue.put(
         vlad(
-            vlad.source, validators=vlad.validators, disable_console_log=arguments.quiet
+            vlad.source, validators=vlad.validators, quiet=parse_args().quiet
         ).validate()
     )
 
 
 result_queue = Queue()
-arguments = parse_args()
 
 
 def main():
-    global arguments
     arguments = parse_args()
     logger = logs.logger
 
@@ -229,9 +227,7 @@ def main():
     all_passed = True
     if arguments.processes == 1:
         for vlad in vlad_classes:
-            passed = vlad(
-                source=vlad.source, disable_console_log=arguments.quiet
-            ).validate()
+            passed = vlad(source=vlad.source, quiet=arguments.quiet).validate()
             all_passed = all_passed and passed
 
     else:

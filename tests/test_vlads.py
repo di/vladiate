@@ -110,7 +110,7 @@ def test_ignore_missing_validators():
     assert vlad.missing_validators == {"Column B"}
 
 
-def test_disable_console_log(caplog):
+def test_quiet(caplog):
     source = LocalFile("vladiate/examples/vampires.csv")
 
     class TestVlad(Vlad):
@@ -119,7 +119,7 @@ def test_disable_console_log(caplog):
             "Column B": [SetValidator(["Vampire", "Not A Vampire"])],
         }
 
-    vlad = TestVlad(source=source, disable_console_log=True)
+    vlad = TestVlad(source=source, quiet=True)
 
     assert vlad.validate()
     assert len(caplog.records) == 0

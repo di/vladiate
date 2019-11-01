@@ -77,7 +77,6 @@ def test_vladiate(monkeypatch):
     validate_result = stub()
 
     monkeypatch.setattr("vladiate.main.result_queue", result_queue)
-    monkeypatch.setattr("vladiate.main.parse_args", stub())
 
     class TestVlad(Vlad):
         source = String("foo")

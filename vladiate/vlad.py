@@ -14,7 +14,7 @@ class Vlad(object):
         default_validator=EmptyValidator,
         delimiter=None,
         ignore_missing_validators=False,
-        disable_console_log=False,
+        quiet=False,
     ):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
@@ -25,8 +25,7 @@ class Vlad(object):
         self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
-        if disable_console_log:
-            self.logger.disabled = True
+        self.logger.disabled = quiet
 
         self.validators.update(
             {
