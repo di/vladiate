@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-__version__ = '0.0.21'
+__version__ = '0.0.22'
 
 
 class PyTest(TestCommand):
@@ -48,6 +48,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         "Intended Audience :: Developers",
     ],
     keywords='validate CSV vampires',
