@@ -97,6 +97,7 @@ def test_set_validator_fails(field_set, field):
     [
         ([], {}, []),
         (["foo", "bar"], {}, []),
+        (["foo", ""], {}, []),
         (["foo", "foo"], FakeRow({"some_field": ["bar", "baz"]}), ["some_field"]),
         (
             ["foo", "foo", "foo"],
@@ -129,6 +130,8 @@ def test_unique_validator_supports_empty_ok(fields, row, unique_with):
     "fields, row, unique_with, exception, bad",
     [
         (["foo", "bar", "bar"], {}, [], ValidationException, {("bar",)}),
+        (["foo", "", ""], {}, [], ValidationException, {("",)}),
+        (["", "", ""], {}, [], ValidationException, {("",)}),
         (
             ["foo", "foo"],
             FakeRow({"some_field": ["bar", "bar"]}),
