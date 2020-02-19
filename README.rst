@@ -394,6 +394,7 @@ Contributors
 -  `Aditya Natraj <https://github.com/adityanatra>`__
 -  `Sterling Petersen <https://github.com/sterlingpetersen>`__
 -  `Aleix <https://github.com/maleix>`__
+-  `Bob Lannon <https://github.com/boblannon>`__
 
 License
 -------
