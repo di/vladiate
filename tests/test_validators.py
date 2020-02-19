@@ -97,6 +97,7 @@ def test_set_validator_fails(field_set, field):
     [
         ([], {}, []),
         (["foo", "bar"], {}, []),
+        (["foo", ""], {}, []),
         (["foo", "foo"], FakeRow({"some_field": ["bar", "baz"]}), ["some_field"]),
         (
             ["foo", "foo", "foo"],
@@ -117,9 +118,20 @@ def test_unique_validator_works(fields, row, unique_with):
 
 
 @pytest.mark.parametrize(
+    "fields, row, unique_with", [(["foo", "bar", "", ""], {}, []),]
+)
+def test_unique_validator_supports_empty_ok(fields, row, unique_with):
+    validator = UniqueValidator(unique_with=unique_with, empty_ok=True)
+    for field in fields:
+        validator.validate(field, row)
+
+
+@pytest.mark.parametrize(
     "fields, row, unique_with, exception, bad",
     [
         (["foo", "bar", "bar"], {}, [], ValidationException, {("bar",)}),
+        (["foo", "", ""], {}, [], ValidationException, {("",)}),
+        (["", "", ""], {}, [], ValidationException, {("",)}),
         (
             ["foo", "foo"],
             FakeRow({"some_field": ["bar", "bar"]}),

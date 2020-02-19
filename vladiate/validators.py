@@ -96,6 +96,8 @@ class UniqueValidator(Validator):
         self.unique_check = True
 
     def validate(self, field, row={}):
+        if field == "" and self.empty_ok:
+            return
         if self.unique_with and not self.unique_check:
             self._precheck_unique_with(row)
 
