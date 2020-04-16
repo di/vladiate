@@ -351,7 +351,7 @@ Running Vlads Programatically
 
     from vladiate import Vlad
     from vladiate.inputs import LocalFile
-    Vlad(source=LocalFile('path/to/local/file.csv').validate()
+    Vlad(source=LocalFile('path/to/local/file.csv')).validate()
 
 Testing
 ~~~~~~~
