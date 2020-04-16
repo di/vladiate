@@ -203,6 +203,20 @@ class NotEmptyValidator(Validator):
     def bad(self):
         return self.failed
 
+    
+class EmailValidator(Validator):
+    email = None
+    _email_regex = '[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
+
+    def validate(self, field, row):
+        self.email = field
+        if not bool(re.match(self._email_regex, field)):
+            raise ValidationException(' {} is not a valid email'.format(field))
+
+    @property
+    def bad(self):
+        return self.email
+
 
 class Ignore(Validator):
     """ Ignore a given field. Never fails """
