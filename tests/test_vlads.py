@@ -87,6 +87,7 @@ def test_fails_validation():
     assert not vlad.validate()
     assert vlad.validators["Column A"][0].fail_count == 3
     assert vlad.validators["Column B"][0].fail_count == 3
+    assert vlad.invalid_lines == {1,2,3}
 
 
 def test_gt_99_failures():
