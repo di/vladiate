@@ -5,7 +5,7 @@ from vladiate.exceptions import ValidationException, BadValidatorException
 
 
 class Validator(object):
-    """ Generic Validator class """
+    """Generic Validator class"""
 
     def __init__(self, empty_ok=False):
         self.fail_count = 0
@@ -13,16 +13,16 @@ class Validator(object):
 
     @property
     def bad(self):
-        """ Return something containing the "bad" fields """
+        """Return something containing the "bad" fields"""
         raise NotImplementedError
 
     def validate(self, field, row):
-        """ Validate the given field. Also is given the row context """
+        """Validate the given field. Also is given the row context"""
         raise NotImplementedError
 
 
 class CastValidator(Validator):
-    """ Validates that a field can be cast to a float """
+    """Validates that a field can be cast to a float"""
 
     def __init__(self, **kwargs):
         super(CastValidator, self).__init__(**kwargs)
@@ -42,7 +42,7 @@ class CastValidator(Validator):
 
 
 class FloatValidator(CastValidator):
-    """ Validates that a field can be cast to a float """
+    """Validates that a field can be cast to a float"""
 
     def __init__(self, **kwargs):
         super(FloatValidator, self).__init__(**kwargs)
@@ -50,7 +50,7 @@ class FloatValidator(CastValidator):
 
 
 class IntValidator(CastValidator):
-    """ Validates that a field can be cast to an int """
+    """Validates that a field can be cast to an int"""
 
     def __init__(self, **kwargs):
         super(IntValidator, self).__init__(**kwargs)
@@ -58,7 +58,7 @@ class IntValidator(CastValidator):
 
 
 class SetValidator(Validator):
-    """ Validates that a field is in the given set """
+    """Validates that a field is in the given set"""
 
     def __init__(self, valid_set=[], **kwargs):
         super(SetValidator, self).__init__(**kwargs)
@@ -80,7 +80,7 @@ class SetValidator(Validator):
 
 
 class UniqueValidator(Validator):
-    """ Validates that a field is unique within the file """
+    """Validates that a field is unique within the file"""
 
     def __init__(self, unique_with=[], **kwargs):
         super(UniqueValidator, self).__init__(**kwargs)
@@ -121,7 +121,7 @@ class UniqueValidator(Validator):
 
 
 class RegexValidator(Validator):
-    """ Validates that a field matches a given regex """
+    """Validates that a field matches a given regex"""
 
     def __init__(self, pattern=r"di^", full=False, **kwargs):
         super(RegexValidator, self).__init__(**kwargs)
@@ -170,7 +170,7 @@ class RangeValidator(Validator):
 
 
 class EmptyValidator(Validator):
-    """ Validates that a field is always empty """
+    """Validates that a field is always empty"""
 
     def __init__(self, **kwargs):
         super(EmptyValidator, self).__init__(**kwargs)
@@ -187,7 +187,7 @@ class EmptyValidator(Validator):
 
 
 class NotEmptyValidator(Validator):
-    """ Validates that a field is not empty """
+    """Validates that a field is not empty"""
 
     def __init__(self, **kwargs):
         super(NotEmptyValidator, self).__init__(**kwargs)
@@ -205,7 +205,7 @@ class NotEmptyValidator(Validator):
 
 
 class Ignore(Validator):
-    """ Ignore a given field. Never fails """
+    """Ignore a given field. Never fails"""
 
     def validate(self, field, row={}):
         pass
@@ -216,7 +216,7 @@ class Ignore(Validator):
 
 
 def _stringify_set(a_set, max_len, max_sort_size=8192):
-    """ Stringify `max_len` elements of `a_set` and count the remainings
+    """Stringify `max_len` elements of `a_set` and count the remainings
 
     Small sets (len(a_set) <= max_sort_size) are displayed sorted.
     Large sets won't be sorted for performance reasons.
