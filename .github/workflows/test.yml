@@ -1,4 +1,4 @@
-name: GitHub Actions - Tests
+name: Test
 on: [push]
 jobs:
   Test:
@@ -7,5 +7,4 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Run tests
-        run: |
-          python setup.py test
+        run: tox
