@@ -1,10 +1,19 @@
 name: Test
-on: [push]
+on: [push, pull_request]
 jobs:
-  Test:
+  test:
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Run tests
-        run: tox
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Use Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Install tox
+      run: python -m pip install tox
+    - name: Test
+      run: python -m tox -e py
