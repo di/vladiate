@@ -1,0 +1,11 @@
+name: GitHub Actions - Tests
+on: [push]
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          python setup.py test
