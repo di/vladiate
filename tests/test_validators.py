@@ -19,7 +19,7 @@ from vladiate.validators import (
 
 
 class FakeRow(object):
-    """ A row with side effects """
+    """A row with side effects"""
 
     def __init__(self, fields):
         self.fields = fields
@@ -117,9 +117,7 @@ def test_unique_validator_works(fields, row, unique_with):
         validator.validate(field, row)
 
 
-@pytest.mark.parametrize(
-    "fields, row, unique_with", [(["foo", "bar", "", ""], {}, []),]
-)
+@pytest.mark.parametrize("fields, row, unique_with", [(["foo", "bar", "", ""], {}, [])])
 def test_unique_validator_supports_empty_ok(fields, row, unique_with):
     validator = UniqueValidator(unique_with=unique_with, empty_ok=True)
     for field in fields:

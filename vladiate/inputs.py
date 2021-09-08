@@ -13,7 +13,7 @@ from vladiate.exceptions import MissingExtraException
 
 
 class VladInput(object):
-    """ A generic input class """
+    """A generic input class"""
 
     def __init__(self):
         raise NotImplementedError
@@ -26,7 +26,7 @@ class VladInput(object):
 
 
 class LocalFile(VladInput):
-    """ Read from a local file path """
+    """Read from a local file path"""
 
     def __init__(self, filename):
         self.filename = filename
@@ -40,7 +40,7 @@ class LocalFile(VladInput):
 
 
 class S3File(VladInput):
-    """ Read from a file in S3 """
+    """Read from a file in S3"""
 
     def __init__(self, path=None, bucket=None, key=None):
         try:
@@ -80,7 +80,7 @@ class S3File(VladInput):
 
 
 class String(VladInput):
-    """ Read a file from a string """
+    """Read a file from a string"""
 
     def __init__(self, string_input=None, string_io=None):
         self.string_io = string_io if string_io else StringIO(string_input)
