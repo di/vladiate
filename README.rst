@@ -395,6 +395,7 @@ Contributors
 -  `Sterling Petersen <https://github.com/sterlingpetersen>`__
 -  `Aleix <https://github.com/maleix>`__
 -  `Bob Lannon <https://github.com/boblannon>`__
+-  `Santi <https://github.com/santilytics>`__
 
 License
 -------
