@@ -398,6 +398,7 @@ Contributors
 -  `Aleix <https://github.com/maleix>`__
 -  `Bob Lannon <https://github.com/boblannon>`__
 -  `Santi <https://github.com/santilytics>`__
+-  `David Park <https://github.com/dp247>`__
 
 License
 -------
