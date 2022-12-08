@@ -65,24 +65,24 @@ class SetValidator(Validator):
         self.valid_set = set(valid_set)
         self.invalid_set = set([])
         self.ignore_case = ignore_case
+        self.set_to_check = [s.lower() for s in valid_set] if self.ignore_case else valid_set
+
         if self.empty_ok:
             self.valid_set.add("")
-        if self.ignore_case:
-            self.valid_set = [s.lower() for s in valid_set]
 
     def validate(self, field, row={}):
-        if self.ignore_case:
-            field = field.lower()
-        if field not in self.valid_set:
+        field_to_check = field.lower() if self.ignore_case else field
+        if field_to_check not in self.set_to_check:
             self.invalid_set.add(field)
             raise ValidationException(
                 f"'{field}' is not in {_stringify_set(self.valid_set, 100)}"
+                + " (ignoring case sensitivity)" if self.ignore_case else ""
             )
+
 
     @property
     def bad(self):
         return self.invalid_set
-
 
 class UniqueValidator(Validator):
     """Validates that a field is unique within the file"""
