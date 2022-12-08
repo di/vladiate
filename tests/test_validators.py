@@ -82,6 +82,15 @@ def test_set_validator_works(field_set, field):
 
 
 @pytest.mark.parametrize(
+    "field_set, field", [(["foo"], "Foo"), (["Bar"], "bar"), (["foo"], "foo")]
+)
+def test_set_validator_supports_ignore_case(field_set, field):
+    validator = SetValidator(field_set, ignore_case=True)
+    validator.validate(field)
+    assert field.lower() in validator.valid_set
+
+
+@pytest.mark.parametrize(
     "field_set, field", [([], "bar"), (["foo"], "bar"), (["foo", "bar"], "baz")]
 )
 def test_set_validator_fails(field_set, field):
@@ -100,14 +109,14 @@ def test_set_validator_fails(field_set, field):
         (["foo", ""], {}, []),
         (["foo", "foo"], FakeRow({"some_field": ["bar", "baz"]}), ["some_field"]),
         (
-            ["foo", "foo", "foo"],
-            FakeRow(
-                {
-                    "some_field": ["bar", "baz", "bar"],
-                    "some_other_field": ["baz", "bar", "bar"],
-                }
-            ),
-            ["some_field", "some_other_field"],
+                ["foo", "foo", "foo"],
+                FakeRow(
+                    {
+                        "some_field":       ["bar", "baz", "bar"],
+                        "some_other_field": ["baz", "bar", "bar"],
+                    }
+                ),
+                ["some_field", "some_other_field"],
         ),
     ],
 )
@@ -131,18 +140,18 @@ def test_unique_validator_supports_empty_ok(fields, row, unique_with):
         (["foo", "", ""], {}, [], ValidationException, {("",)}),
         (["", "", ""], {}, [], ValidationException, {("",)}),
         (
-            ["foo", "foo"],
-            FakeRow({"some_field": ["bar", "bar"]}),
-            ["some_field"],
-            ValidationException,
-            {("foo", "bar")},
+                ["foo", "foo"],
+                FakeRow({"some_field": ["bar", "bar"]}),
+                ["some_field"],
+                ValidationException,
+                {("foo", "bar")},
         ),
         (
-            ["foo", "foo"],
-            FakeRow({"some_field": ["bar", "bar"]}),
-            ["other_field"],
-            BadValidatorException,
-            set(),
+                ["foo", "foo"],
+                FakeRow({"some_field": ["bar", "bar"]}),
+                ["other_field"],
+                BadValidatorException,
+                set(),
         ),
     ],
 )
