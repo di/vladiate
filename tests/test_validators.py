@@ -87,8 +87,9 @@ def test_set_validator_works(field_set, field):
 )
 def test_set_validator_supports_ignore_case(field_set, field):
     validator = SetValidator(field_set, ignore_case=True)
-    validator.validate(field)
-    assert field.lower() in validator.valid_set
+    field_to_check = field.lower() if validator.ignore_case else field
+    validator.validate(field_to_check)
+    assert field_to_check in validator.set_to_check
 
 
 @pytest.mark.parametrize(
