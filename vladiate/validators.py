@@ -79,10 +79,10 @@ class SetValidator(Validator):
                 + " (ignoring case sensitivity)" if self.ignore_case else ""
             )
 
-
     @property
     def bad(self):
         return self.invalid_set
+
 
 class UniqueValidator(Validator):
     """Validates that a field is unique within the file"""
