@@ -72,7 +72,7 @@ class SetValidator(Validator):
 
     def validate(self, field, row={}):
         field_to_check = field.lower() if self.ignore_case else field
-        if field_to_check not in self.set_to_check:
+        if field_to_check not in self.set_to_check and (field != ""):
             self.invalid_set.add(field)
             raise ValidationException(
                 f"'{field}' is not in {_stringify_set(self.valid_set, 100)}"
