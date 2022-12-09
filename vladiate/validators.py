@@ -65,7 +65,9 @@ class SetValidator(Validator):
         self.valid_set = set(valid_set)
         self.invalid_set = set([])
         self.ignore_case = ignore_case
-        self.set_to_check = [s.lower() for s in valid_set] if self.ignore_case else valid_set
+        self.set_to_check = (
+            [s.lower() for s in valid_set] if self.ignore_case else valid_set
+        )
 
         if self.empty_ok:
             self.valid_set.add("")
@@ -76,7 +78,9 @@ class SetValidator(Validator):
             self.invalid_set.add(field)
             raise ValidationException(
                 f"'{field}' is not in {_stringify_set(self.valid_set, 100)}"
-                + " (ignoring case sensitivity)" if self.ignore_case else ""
+                + " (ignoring case sensitivity)"
+                if self.ignore_case
+                else ""
             )
 
     @property
