@@ -82,6 +82,23 @@ def test_set_validator_works(field_set, field):
 
 
 @pytest.mark.parametrize(
+    "field_set, field",
+    [
+        (["foo"], "Foo"),
+        (["Bar"], "bar"),
+        (["foo"], "foo"),
+        (["Foo", "Bar"], "foo"),
+        (["Foo", "Bar"], "bar"),
+    ],
+)
+def test_set_validator_supports_ignore_case(field_set, field):
+    validator = SetValidator(field_set, ignore_case=True)
+    field_to_check = field.lower() if validator.ignore_case else field
+    validator.validate(field_to_check)
+    assert field_to_check in validator.set_to_check
+
+
+@pytest.mark.parametrize(
     "field_set, field", [([], "bar"), (["foo"], "bar"), (["foo", "bar"], "baz")]
 )
 def test_set_validator_fails(field_set, field):

@@ -227,6 +227,8 @@ Vladiate comes with a few common validators built-in:
       List of valid possible fields
   :``empty_ok=False``:
       Implicity adds the empty string to the specified set.
+  :``ignore_case=False``:
+      Ignore the case between values in the column and valid set
 
 *class* ``UniqueValidator``
 
@@ -396,6 +398,7 @@ Contributors
 -  `Aleix <https://github.com/maleix>`__
 -  `Bob Lannon <https://github.com/boblannon>`__
 -  `Santi <https://github.com/santilytics>`__
+-  `David Park <https://github.com/dp247>`__
 
 License
 -------

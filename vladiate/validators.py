@@ -60,18 +60,27 @@ class IntValidator(CastValidator):
 class SetValidator(Validator):
     """Validates that a field is in the given set"""
 
-    def __init__(self, valid_set=[], **kwargs):
+    def __init__(self, valid_set=[], ignore_case=False, **kwargs):
         super(SetValidator, self).__init__(**kwargs)
         self.valid_set = set(valid_set)
         self.invalid_set = set([])
+        self.ignore_case = ignore_case
+        self.set_to_check = (
+            [s.lower() for s in valid_set] if self.ignore_case else valid_set
+        )
+
         if self.empty_ok:
             self.valid_set.add("")
 
     def validate(self, field, row={}):
-        if field not in self.valid_set:
+        field_to_check = field.lower() if self.ignore_case else field
+        if field_to_check not in self.set_to_check and (field != ""):
             self.invalid_set.add(field)
             raise ValidationException(
-                "'{}' is not in {}".format(field, _stringify_set(self.valid_set, 100))
+                f"'{field}' is not in {_stringify_set(self.valid_set, 100)}"
+                + " (ignoring case sensitivity)"
+                if self.ignore_case
+                else ""
             )
 
     @property
