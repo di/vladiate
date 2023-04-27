@@ -15,13 +15,16 @@ class Vlad(object):
         delimiter=None,
         ignore_missing_validators=False,
         quiet=False,
+        row_validators=[],
     ):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
+        self.row_failures = []
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
         self.validators = validators or getattr(self, "validators", {})
+        self.row_validators = row_validators or getattr(self, "row_validators", [])
         self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
@@ -117,6 +120,15 @@ class Vlad(object):
 
         for line, row in enumerate(reader):
             self.line_count += 1
+
+            for validator in self.row_validators:
+                try:
+                    validator.validate(row)
+                except ValidationException as e:
+                    self.row_failures.append(e)
+                    self.invalid_lines.add(self.line_count)
+                    validator.fail_count += 1
+
             for field_name, field in row.items():
                 if field_name in self.validators:
                     for validator in self.validators[field_name]:
@@ -127,7 +139,7 @@ class Vlad(object):
                             self.invalid_lines.add(self.line_count)
                             validator.fail_count += 1
 
-        if self.failures:
+        if self.failures or self.row_failures:
             self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
             self._log_debug_failures()
             self._log_validator_failures()

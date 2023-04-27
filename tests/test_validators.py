@@ -11,6 +11,8 @@ from vladiate.validators import (
     NotEmptyValidator,
     RangeValidator,
     RegexValidator,
+    RowValidator,
+    RowLengthValidator,
     SetValidator,
     UniqueValidator,
     Validator,
@@ -253,6 +255,36 @@ def test_base_class_raises():
 
     with pytest.raises(NotImplementedError):
         validator.validate(stub(), stub())
+
+
+def test_row_length_validator_works():
+    validator = RowLengthValidator()
+    validator.validate({"Field One": "1", "Field Two": "Two"})
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        {"Field One": "1", "Field Two": None},
+        {"Field One": "1", "Field Two": "2", None: ["3", "4"]},
+    ],
+)
+def test_row_length_validator_fails(row):
+    validator = RowLengthValidator()
+    with pytest.raises(ValidationException):
+        validator.validate(row)
+
+    assert validator.bad == [row]
+
+
+def test_base_row_validator_raises():
+    validator = RowValidator()
+
+    with pytest.raises(NotImplementedError):
+        validator.bad
+
+    with pytest.raises(NotImplementedError):
+        validator.validate(stub())
 
 
 @pytest.mark.parametrize(

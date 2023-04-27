@@ -278,6 +278,17 @@ Vladiate comes with a few common validators built-in:
 
   Always passes validation. Used to explicity ignore a given column.
 
+*class* ``RowValidator``
+
+  Generic row validator. Should be subclassed by any custom validators. Not
+  to be used directly.
+
+*class* ``RowLengthValidator``
+
+  Validates that each row has the expected number of fields. The expected
+  number of fields is inferred from the CSV header row read by
+  ``csv.DictReader``.
+
 Built-in Input Types
 ^^^^^^^^^^^^^^^^^^^^
 

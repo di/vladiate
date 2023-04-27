@@ -5,6 +5,7 @@ from vladiate.validators import (
     EmptyValidator,
     FloatValidator,
     NotEmptyValidator,
+    RowLengthValidator,
     SetValidator,
     UniqueValidator,
 )
@@ -57,6 +58,18 @@ def test_validators_in_class_variable_are_used():
         }
 
     assert TestVlad(source=source).validate()
+
+
+def test_row_validators():
+    source = LocalFile("vladiate/examples/vampires.csv")
+    row_validators = [RowLengthValidator()]
+    validators = {
+        "Column A": [UniqueValidator()],
+        "Column B": [SetValidator(["Vampire", "Not A Vampire"])],
+    }
+    assert Vlad(
+        source=source, row_validators=row_validators, validators=validators
+    ).validate()
 
 
 def test_missing_validators():
