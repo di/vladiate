@@ -129,6 +129,45 @@ class UniqueValidator(Validator):
         return self.duplicates
 
 
+class RowLengthValidator(Validator):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.invalid_rows = []
+
+    def validate(self, field, row):
+        # `csv.DictReader` uses its `restkey` attributes to store values
+        # left over after consuming the expected number of values based
+        # on the header row. If the row contains `None` here, that means
+        # the row was longer than expected. Note that this currently
+        # only handles the default value of `None` and does not have
+        # access to the `DictReader` instance to lookup the configured
+        # `restkey` attribute. `vladiate` does not modify this attribute
+        # as of the time of writing this validator, so we use the
+        # default of `None` in our checks. `None` is not an expected
+        # valid key for standard `DictReader` use.
+        if None in row.keys():
+            self.invalid_rows.append(row)
+            expected_length = len(row) - 1
+            length = len(row) + len(row[None]) - 1
+            raise ValidationException(
+                f"Expected {expected_length} fields, got {length}"
+            )
+
+        # Similarly, there is a `csv.DictReader.restval` attribute that
+        # handles the case where there are fewer than expected rows.
+        if None in row.values():
+            self.invalid_rows.append(row)
+            expected_length = len(row)
+            length = len([value for value in row.values() if value is not None])
+            raise ValidationException(
+                f"Expected {expected_length} fields, got {length}"
+            )
+
+    @property
+    def bad(self):
+        return self.invalid_rows
+
+
 class RegexValidator(Validator):
     """Validates that a field matches a given regex"""
 

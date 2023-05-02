@@ -11,6 +11,7 @@ from vladiate.validators import (
     NotEmptyValidator,
     RangeValidator,
     RegexValidator,
+    RowLengthValidator,
     SetValidator,
     UniqueValidator,
     Validator,
@@ -170,6 +171,24 @@ def test_unique_validator_fails(fields, row, unique_with, exception, bad):
             validator.validate(field, row)
 
     assert validator.bad == bad
+
+
+def test_row_length_validator_works():
+    validator = RowLengthValidator()
+    validator.validate("bar", row={"foo": "bar", "baz": "quux"})
+
+
+@pytest.mark.parametrize(
+    "field, row",
+    [
+        ("foo", {"foo": "bar", None: ["baz", "quux"]}),
+        ("foo", {"foo": "bar", "baz": None}),
+    ],
+)
+def test_row_length_validator_fails(field, row):
+    validator = RowLengthValidator()
+    with pytest.raises(ValidationException):
+        validator.validate(row[field], row=row)
 
 
 @pytest.mark.parametrize("pattern, field", [(r"foo.*", "foo"), (r"foo.*", "foobar")])
