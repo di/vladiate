@@ -19,7 +19,7 @@ class Vlad(object):
     ):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
-        self.row_failures = []
+        self.row_failures = defaultdict(list)
         self.missing_validators = None
         self.missing_fields = None
         self.source = source
@@ -40,6 +40,11 @@ class Vlad(object):
         )
 
     def _log_debug_failures(self):
+        for line, errors in self.row_failures.items():
+            self.logger.debug("\nFailure on line number {}".format(line))
+            for error in errors:
+                self.logger.debug("    {}".format(error))
+
         for field_name, field_failure in self.failures.items():
             self.logger.debug('\nFailure on field: "{}":'.format(field_name))
             for i, (row, errors) in enumerate(field_failure.items()):
@@ -48,6 +53,29 @@ class Vlad(object):
                     self.logger.debug("    {}".format(error))
 
     def _log_validator_failures(self):
+        for validator in self.row_validators:
+            if validator.bad:
+                self.logger.error(
+                    " {} failed {} time(s) ({:.1%})".format(
+                        validator.__class__.__name__,
+                        validator.fail_count,
+                        validator.fail_count / self.line_count,
+                    )
+                )
+                try:
+                    # If validator.bad is iterable, it contains the rows
+                    # which caused it to fail
+                    invalid = list(validator.bad)
+                    shown = ["'{}'".format(row) for row in invalid[:99]]
+                    hidden = ["'{}'".format(row) for row in invalid[99:]]
+                    self.logger.error(
+                        "   Invalid rows: \n{}".format("    \n".join(shown))
+                    )
+                    if hidden:
+                        self.logger.error("    ({} more suppressed".format(len(hidden)))
+                except TypeError:
+                    pass
+
         for field_name, validators_list in self.validators.items():
             for validator in validators_list:
                 if validator.bad:
@@ -125,7 +153,7 @@ class Vlad(object):
                 try:
                     validator.validate(row)
                 except ValidationException as e:
-                    self.row_failures.append(e)
+                    self.row_failures[line].append(e)
                     self.invalid_lines.add(self.line_count)
                     validator.fail_count += 1
 
