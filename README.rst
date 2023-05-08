@@ -1,15 +1,11 @@
 Vladiate
 ========
 
-.. image:: https://travis-ci.org/di/vladiate.svg?branch=master
-    :target: https://travis-ci.org/di/vladiate
+.. image:: https://github.com/di/vladiate/actions/workflows/test.yml/badge.svg?query=branch%3Amaster+event%3Apush
+    :target: https://github.com/di/vladiate/actions/workflows/test.yml?query=branch%3Amaster+event%3Apush
 
 .. image:: https://coveralls.io/repos/di/vladiate/badge.svg?branch=master
     :target: https://coveralls.io/github/di/vladiate
-
-.. image:: https://requires.io/github/di/vladiate/requirements.svg?branch=master
-     :target: https://requires.io/github/di/vladiate/requirements/?branch=master
-     :alt: Requirements Status
 
 Description
 -----------
