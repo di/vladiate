@@ -406,6 +406,7 @@ Contributors
 -  `Bob Lannon <https://github.com/boblannon>`__
 -  `Santi <https://github.com/santilytics>`__
 -  `David Park <https://github.com/dp247>`__
+-  `Jon Bonafato <https://github.com/jonafato>`__
 
 License
 -------
