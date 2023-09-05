@@ -14,6 +14,7 @@ class Vlad(object):
         default_validator=EmptyValidator,
         delimiter=None,
         ignore_missing_validators=False,
+        file_validation_failure_threshold=None,
         quiet=False,
         row_validators=[],
     ):
@@ -30,6 +31,8 @@ class Vlad(object):
         self.ignore_missing_validators = ignore_missing_validators
         self.logger.disabled = quiet
         self.invalid_lines = set()
+        self.file_validation_failure_threshold = file_validation_failure_threshold
+        self.total_lines = 0
 
         self.validators.update(
             {
@@ -120,6 +123,11 @@ class Vlad(object):
             )
         )
 
+    def _get_total_lines(self):
+        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+        self.total_lines = sum(1 for _ in reader)
+        return self.total_lines
+
     def validate(self):
         self.logger.info(
             "\nValidating {}(source={})".format(self.__class__.__name__, self.source)
@@ -146,6 +154,9 @@ class Vlad(object):
             self._log_missing_fields()
             return False
 
+        if self.file_validation_failure_threshold:
+            self.total_lines = self._get_total_lines()
+
         for line, row in enumerate(reader):
             self.line_count += 1
 
@@ -166,6 +177,20 @@ class Vlad(object):
                             self.failures[field_name][line].append(e)
                             self.invalid_lines.add(self.line_count)
                             validator.fail_count += 1
+                if (
+                    self.file_validation_failure_threshold
+                    and self.total_lines > 0
+                    and validator.fail_count / self.total_lines
+                    > self.file_validation_failure_threshold
+                ):
+                    self.logger.error(
+                        "  {} failed {} time(s) ({:.1%})".format(
+                            validator.__class__.__name__,
+                            validator.fail_count,
+                            validator.fail_count / self.total_lines,
+                        )
+                    )
+                    return False
 
         if self.failures or self.row_failures:
             self.logger.info("\033[0;31m" + "Failed :(" + "\033[0m")
