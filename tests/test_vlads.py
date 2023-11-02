@@ -155,3 +155,22 @@ def test_when_bad_is_non_iterable():
     assert vlad.validators["Column A"][0].bad
     assert vlad.validators["Column B"][0].fail_count == 0
     assert not vlad.validators["Column B"][0].bad
+
+
+def test_stop_file_validation_at_invalid_threshold():
+    source = LocalFile("vladiate/examples/real_vampires.csv")
+
+    class TestVlad(Vlad):
+        validators = {
+            "Column A": [EmptyValidator()],
+            "Column B": [EmptyValidator()],
+            "Column C": [UniqueValidator()],
+        }
+
+    vlad = TestVlad(source=source, file_validation_failure_threshold=0.1)
+
+    assert not vlad.validate()
+    assert vlad.validators["Column A"][0].fail_count == 1
+    assert vlad.validators["Column B"][0].fail_count == 0
+    assert vlad.validators["Column C"][0].fail_count == 0
+    assert vlad.invalid_lines == {1}
