@@ -412,6 +412,7 @@ Contributors
 -  `Santi <https://github.com/santilytics>`__
 -  `David Park <https://github.com/dp247>`__
 -  `Jon Bonafato <https://github.com/jonafato>`__
+-  `haritha-ravi <https://github.com/haritha-ravi>`__
 
 License
 -------
