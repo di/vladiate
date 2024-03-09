@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from multiprocessing import Pool, Queue
 from vladiate import Vlad
 from vladiate import logs
@@ -7,7 +8,6 @@ import os
 import sys
 import inspect
 from argparse import ArgumentParser
-from pkg_resources import get_distribution
 
 
 def parse_args():
@@ -187,7 +187,7 @@ def main():
     logger = logs.logger
 
     if arguments.show_version:
-        print("Vladiate %s" % (get_distribution("vladiate").version,))
+        print("Vladiate %s" % (version("vladiate"),))
         return exits.OK
 
     vladfile = find_vladfile(arguments.vladfile)

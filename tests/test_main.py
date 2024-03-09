@@ -29,7 +29,7 @@ def test_parse_args():
     assert options.processes == 1
     assert options.show_version is False
     assert options.vladfile == "vladfile"
-    assert options.vlads == ["test"]
+    assert options.vlads == ["tests"]
 
 
 @pytest.mark.parametrize(
