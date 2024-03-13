@@ -2,29 +2,8 @@
 
 import sys
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 __version__ = "0.0.26"
-
-
-class PyTest(TestCommand):
-    user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = ["-x", "tests"]
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-
-        errno = pytest.main(self.pytest_args)
-        sys.exit(errno)
 
 
 def readme():
@@ -44,11 +23,11 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Intended Audience :: Developers",
     ],
     keywords="validate CSV vampires",
@@ -63,7 +42,6 @@ setup(
     install_requires=[],
     extras_require={"s3": ["boto"]},
     tests_require=["pretend", "pytest", 'black;python_version>="3.6"'],
-    cmdclass={"test": PyTest},
     entry_points={
         "console_scripts": [
             "vladiate = vladiate.main:main",
