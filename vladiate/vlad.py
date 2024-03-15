@@ -17,6 +17,7 @@ class Vlad(object):
         file_validation_failure_threshold=None,
         quiet=False,
         row_validators=[],
+        fieldnames=None,
     ):
         self.logger = logs.logger
         self.failures = defaultdict(lambda: defaultdict(list))
@@ -26,6 +27,7 @@ class Vlad(object):
         self.source = source
         self.validators = validators or getattr(self, "validators", {})
         self.row_validators = row_validators or getattr(self, "row_validators", [])
+        self.fieldnames = fieldnames or getattr(self, "fieldnames", None)
         self.delimiter = delimiter or getattr(self, "delimiter", ",")
         self.line_count = 0
         self.ignore_missing_validators = ignore_missing_validators
@@ -124,7 +126,9 @@ class Vlad(object):
         )
 
     def _get_total_lines(self):
-        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+        reader = csv.DictReader(
+            self.source.open(), delimiter=self.delimiter, fieldnames=self.fieldnames
+        )
         self.total_lines = sum(1 for _ in reader)
         return self.total_lines
 
@@ -132,7 +136,9 @@ class Vlad(object):
         self.logger.info(
             "\nValidating {}(source={})".format(self.__class__.__name__, self.source)
         )
-        reader = csv.DictReader(self.source.open(), delimiter=self.delimiter)
+        reader = csv.DictReader(
+            self.source.open(), delimiter=self.delimiter, fieldnames=self.fieldnames
+        )
 
         if not reader.fieldnames:
             self.logger.info(

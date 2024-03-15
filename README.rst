@@ -349,6 +349,13 @@ Running Vlads Programatically
       field. Optional, defaults to the class variable `row_validators` if set,
       otherwise `[]`, which does not perform any row-level validation.
 
+  :``fieldnames=None``:
+      Sequence of field names to be passed through to the underlying
+      `csv.DictReader` instance. If provided, the reader will use these field
+      names instead of inferring them from the input CSV's first row. Intended
+      only for use with CSVs that do not have header rows. Optional, defaults
+      to `None`.
+
   :``delimiter=','``:
       The delimiter used within your csv source. Optional, defaults to `,`.
 
