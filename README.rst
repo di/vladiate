@@ -343,6 +343,12 @@ Running Vlads Programatically
       List of validators. Optional, defaults to the class variable `validators`
       if set, otherwise uses `EmptyValidator` for all fields.
 
+  :``row_validators=[]``:
+      List of row-level validators. Validators provided here operate on entire
+      rows and can be used to define constraints that involve more than one
+      field. Optional, defaults to the class variable `row_validators` if set,
+      otherwise `[]`, which does not perform any row-level validation.
+
   :``delimiter=','``:
       The delimiter used within your csv source. Optional, defaults to `,`.
 
@@ -411,7 +417,7 @@ Contributors
 -  `Bob Lannon <https://github.com/boblannon>`__
 -  `Santi <https://github.com/santilytics>`__
 -  `David Park <https://github.com/dp247>`__
--  `Jon Bonafato <https://github.com/jonafato>`__
+-  `Jon Banafato <https://github.com/jonafato>`__
 -  `haritha-ravi <https://github.com/haritha-ravi>`__
 
 License
