@@ -16,6 +16,7 @@ from vladiate.validators import (
     SetValidator,
     UniqueValidator,
     Validator,
+    EmailValidator,
     _stringify_set,
 )
 
@@ -54,12 +55,21 @@ def test_cast_validator():
 def test_float_validator_works(field):
     FloatValidator().validate(field)
 
-
+    
 @pytest.mark.parametrize("field", [("foo"), (" "), ("7..0"), ("4,200")])
 def test_float_validator_fails(field):
     with pytest.raises(ValidationException):
         FloatValidator().validate(field)
-
+    
+@pytest.mark.parametrize("field", [("adonis@mail.com"), ("nom@mail.co.ng")])
+def test_email_validator_works(field):
+    EmailValidator().validate(field)
+    
+@pytest.mark.parametrize("field", [("adonis@@mail.com"), ("nom_mail.co.ng")])
+def test_email_validator_fails(field):
+    with pytest.raises(ValidationException):
+        EmailValidator().validate(field)
+    
 
 @pytest.mark.parametrize("field", [("42")])
 def test_int_validator_works(field):
