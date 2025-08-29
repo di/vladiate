@@ -90,6 +90,32 @@ def test_no_fieldnames():
     assert not TestVlad(source=source).validate()
 
 
+def test_explicit_fieldnames():
+    source = String("Dracula,Vampire")
+
+    class TestVlad(Vlad):
+        validators = {
+            "Name": [UniqueValidator()],
+            "Status": [SetValidator(["Vampire", "Not A Vampire"])],
+        }
+        fieldnames = ["Name", "Status"]
+
+    assert TestVlad(source=source).validate()
+
+
+def test_explicit_fieldnames_conflict_fails():
+    source = LocalFile("vladiate/examples/vampires.csv")
+
+    class TestVlad(Vlad):
+        validators = {
+            "Name": [UniqueValidator()],
+            "Status": [SetValidator(["Vampire", "Not A Vampire"])],
+        }
+        fieldnames = ["Name", "Status"]
+
+    assert not TestVlad(source=source).validate()
+
+
 def test_fails_validation():
     source = LocalFile("vladiate/examples/vampires.csv")
 
