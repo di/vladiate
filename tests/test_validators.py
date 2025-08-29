@@ -61,7 +61,7 @@ def test_float_validator_fails(field):
         FloatValidator().validate(field)
 
 
-@pytest.mark.parametrize("field", [("42")])
+@pytest.mark.parametrize("field", ["42"])
 def test_int_validator_works(field):
     IntValidator().validate(field)
 

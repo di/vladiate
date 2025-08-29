@@ -1,4 +1,4 @@
-""" A collection of exit codes that work on non-UNIX systems """
+"""A collection of exit codes that work on non-UNIX systems"""
 
 import os
 
